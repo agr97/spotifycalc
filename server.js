@@ -1,19 +1,21 @@
 const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
 const path = require('path');
+const socketIo = require('socket.io');
+const authentication = require('./authentication');
+const SpotifyWebApi = require('spotify-web-api-node');
 
 const app = express();
-app.use(express.static(path.join(__dirname, 'build')));
-
 const server = http.createServer(app);
 const io = socketIo(server);
 
-app.get('/', (req, res) => {
-  res.sendFile(`${__dirname}/build/index.html`);
-});
+app.use(express.static(path.join(__dirname, 'build')));
 
-const serverMessages = [];
+authentication.spotifyRefreshToken();
+setInterval(() => {
+  authentication.spotifyRefreshToken();
+}, 3590000);
+
 
 io.sockets.on('connection', (socket) => {
   console.log('a user connected');
@@ -28,10 +30,28 @@ io.sockets.on('connection', (socket) => {
   });
 });
 
+/** 
+spotifyApi.getPlaylist('nonnoobgod', '7sHlmgCE362bjKmijLEU48')
+  .then(function(data) {
+    console.log('gets this far');
+    console.log('Some information about this playlist', data.body);
+  }, function(err) {
+    console.log('Something went wrong!', err);
+  });
+
+*/
+
+/**
+
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(`${__dirname}/build/index.html`));
 });
 
+
+
+
 server.listen(3000, () => {
   console.log('listening on *:3000');
 });
+*/
