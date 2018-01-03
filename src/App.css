@@ -1,23 +1,38 @@
 body {
-  background-color: #303030
-}
-
-
-.App {
-  text-align: center;
+  background-color: #303030;
 }
 
 .App-logo {
-  height: 80px;
-}
+  width: 150px;
+  height: auto;
+  margin: auto;
+  display: table-cell;
 
+}
 
 .header {
   text-align: center;
-  height: 150px;
+  max-height: 100%;
   padding: 20px;
-  color: white;
 }
+
+.playlist {
+  display:table;
+  width: 100%;
+  margin: 20px;
+}
+
+.playlistMain {
+  display: table-cell;
+  text-align: left;
+  vertical-align: middle;
+  margin: 10px;
+}
+
+.playlistInfo {
+  margin: 10px;
+}
+
 /*
 .App-title {
   font-size: 1.5em;
@@ -31,4 +46,6 @@ body {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+  object-fit: contain;
 */
