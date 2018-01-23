@@ -7,7 +7,7 @@ import { Paper, TextField, RaisedButton, Tabs, Tab, FlatButton} from 'material-u
 import './App.css';
 import socketIo from 'socket.io-client';
 import url from 'url';
-import { Router, Route, IndexRoute, browserHistory, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, IndexRoute, browserHistory, Link } from 'react-router-dom';
 import SwipeableRoutes from 'react-swipeable-routes';
 import SpotifyWebApi from 'spotify-web-api-node';
 
@@ -36,7 +36,6 @@ class App extends Component {
     const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
     const spotifyApi = new SpotifyWebApi({
       clientId: '4cc10ec7899f45838fb6ee2fbad9f568',
-      // clientSecret: '31fe4f464d5f42ecb69c6ebb2494bec9',
       redirectUri: 'http://localhost:3000/callback',
     });
     const state = generateRandomString(16);

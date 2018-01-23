@@ -5,7 +5,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
 import createHistory from 'history/createBrowserHistory';
-import { Router, Route, IndexRoute, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Route, IndexRoute, Redirect } from 'react-router-dom';
 
 const history = createHistory();
 
@@ -13,7 +13,7 @@ const router = (
   <Router history={history}>
     <div>
     <Route path="/" component={App} />
-    <Route path="/callback" component={render(<div>hello</div>)} />
+    <Route path="/callback" />
     </div>
   </Router>
 );
