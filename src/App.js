@@ -3,16 +3,46 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import blankalbum from './blankalbumart.png';
-import { Paper, TextField, RaisedButton } from 'material-ui';
+import { Paper, TextField, RaisedButton, Tabs, Tab, FlatButton} from 'material-ui';
 import './App.css';
 import socketIo from 'socket.io-client';
 import url from 'url';
+import { Router, Route, IndexRoute, browserHistory, Link } from 'react-router-dom';
+import SwipeableRoutes from 'react-swipeable-routes';
+import SpotifyWebApi from 'spotify-web-api-node';
 
 const socket = socketIo.connect();
+
+const RedView = () => (
+  <div style={{ height: 300, backgroundColor: "red" }}>Red</div>
+);
+const BlueView = () => (
+  <div style={{ height: 300, backgroundColor: "blue" }}>Blue</div>
+);
+const GreenView = () => (
+  <div style={{ height: 300, backgroundColor: "green" }}>Green</div>
+);
+const YellowView = () => (
+  <div style={{ height: 300, backgroundColor: "yellow" }}>Yellow</div>
+);
+const OtherColorView = ({ match }) => (
+  <div style={{ height: 300, backgroundColor: match.params.color }}>{match.params.color}</div>
+)
 
 class App extends Component {
   constructor(props) {
     super(props);
+    const scopes = ['user-read-private', 'user-read-email'];
+    const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
+    const spotifyApi = new SpotifyWebApi({
+      clientId: '4cc10ec7899f45838fb6ee2fbad9f568',
+      // clientSecret: '31fe4f464d5f42ecb69c6ebb2494bec9',
+      redirectUri: 'http://localhost:3000/callback',
+    });
+    const state = generateRandomString(16);
+    var url = spotifyApi.createAuthorizeURL(scopes, state);
+    console.log(url);
+
     this.state = {
       loadedPlaylist: '',
       playlistUrl: '',
@@ -29,7 +59,8 @@ class App extends Component {
       playlistLoaded: false,
       filesizeNormal: '',
       filesizeHigh: '',
-      filesizeExtreme: ''
+      filesizeExtreme: '',
+      loginurl: url,
     };
 
     this.handleUrlChange = this.handleUrlChange.bind(this);
@@ -38,7 +69,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-
+    
   }
 
   updatePlaylistInfo(playlist, playlistlength) {
@@ -49,21 +80,20 @@ class App extends Component {
     }
 
     const totalseconds = playlistlength / 1000;
-    let megabyesNormal = (totalseconds * 12 / 1024).toFixed(2);
-    let megabyesHigh = (totalseconds * 20 / 1024).toFixed(2);
-    let megabyesExtreme = ((totalseconds * 40) / 1024).toFixed(2);
+    const megabyesNormal = (totalseconds * 12 / 1024).toFixed(2);
+    const megabyesHigh = (totalseconds * 20 / 1024).toFixed(2);
+    const megabyesExtreme = ((totalseconds * 40) / 1024).toFixed(2);
 
     this.setState({
       playlistAlbumArt: playlist.images[0].url,
       playlistName: playlist.name,
       playlistID: playlist.id,
       playlistUsername: playlist.owner.id,
-      playlistFollowers: playlist.followers.total + ' Followers',
-      filesizeNormal: 'File Size at Normal Quality: ' + megabyesNormal  + ' Megabytes',
-      filesizeHigh: 'File Size at High Quality: ' + megabyesHigh + ' Megabytes',
-      filesizeExtreme: 'File Size at Extreme Quality: ' + megabyesExtreme  + ' Megabytes',
+      playlistFollowers: `${playlist.followers.total} Followers`,
+      filesizeNormal: `File Size at Normal Quality: ${megabyesNormal} Megabytes`,
+      filesizeHigh: `File Size at High Quality: ${megabyesHigh} Megabytes`,
+      filesizeExtreme: `File Size at Extreme Quality: ${megabyesExtreme} Megabytes`,
     });
-    
   }
 
   submitUrl(event) {
@@ -109,6 +139,7 @@ class App extends Component {
 
   // https://open.spotify.com/user/nonnoobgod/playlist/2eIlWTq7gSFGZJXnu0I5DP
   // (\/user\/)+(\w+)+(\/playlist\/)+(\w+)
+  
 
   render() {
     return (
@@ -143,7 +174,42 @@ class App extends Component {
           <h4>{this.state.filesizeNormal}</h4>
           <h4>{this.state.filesizeHigh}</h4>
           <h4>{this.state.filesizeExtreme}</h4>
-        </Paper>
+        </Paper>     
+       
+        <div>         
+    
+       <Tabs
+          onChange={this.handleChange}
+          value={this.state.slideIndex}
+          tabItemContainerStyle={{ position: 'fixed', bottom: '0' }}
+        >
+          <Tab label="Tab One" value={0} />
+          <Tab label="Tab Two" value={1} />
+          <Tab label="Tab Three" value={2} />
+        </Tabs>
+           
+        
+        <div>
+        <Link to="/red">Red</Link> |
+        <Link to="/blue">Blue</Link> | 
+        <Link to="/green">Green</Link> | 
+        <Link to="/yellow">Yellow</Link> | 
+        <Link to="/other/palevioletred">Pale Violet Red</Link> | 
+        <Link to="/other/saddlebrown">Saddle Brown</Link>
+        </div>
+        
+
+      <SwipeableRoutes>
+        <Route path="/" component={RedView} />
+        <Route path="/blue" component={BlueView} />
+        <Route path="/green" component={GreenView} />
+        <Route path="/yellow" component={YellowView} />
+        <Route path="/other/:color" component={OtherColorView} defaultParams={{color: 'grey'}} />
+      </SwipeableRoutes>
+      
+        </div>
+
+        <FlatButton label="Default" href={this.state.loginurl} />
 
       </MuiThemeProvider>
     );
