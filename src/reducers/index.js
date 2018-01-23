@@ -3,6 +3,6 @@ import {routerReducer} from 'react-router-redux';
 
 import updatePlaylist from './playlist';
 
-const rootReducer = combineReducers({updatePlaylist, routing: routerReducer});
+const rootReducer = combineReducers({ updatePlaylist, router: routerReducer });
 
 export default rootReducer;

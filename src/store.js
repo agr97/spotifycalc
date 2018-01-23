@@ -1,11 +1,29 @@
-import {createStore, compose } from 'redux';
-import {syncHistoryWithStore} from 'react-router-redux';
-import {browserHistory} from 'react-router';
+import { createStore, compose } from 'redux';
+import { syncHistoryWithStore } from 'react-router-redux';
+import { browserHistory } from 'react-router-dom';
 
 // import root reducer
-import rootReducer from './reducersIndex'
+import rootReducer from './reducers/index';
 
-const defaultState = {date: 1};
+const defaultState = {
+  loadedPlaylist: '',
+  playlistUrl: '',
+  playlistAlbumArt: '',
+  playlistName: '',
+  playlistUsername: '',
+  playlistDisplayUsername: '',
+  textbarUsername: '',
+  playlistID: '',
+  textbarID: '',
+  playlistFollowers: '',
+  errorText: '',
+  validUrl: false,
+  playlistLoaded: false,
+  filesizeNormal: '',
+  filesizeHigh: '',
+  filesizeExtreme: '',
+  loginurl: '',
+};
 
 const store = createStore(rootReducer, defaultState);
 

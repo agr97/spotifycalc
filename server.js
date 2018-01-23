@@ -79,7 +79,7 @@ const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')
  * Verify that the state we put in the cookie matches the state in the query
  * parameter. Then, if all is good, redirect the user to the user page. If all
  * is not good, redirect the user to an error page
- */
+ 
 router.get('/callback', (req, res) => {
   const { code, state } = req.query;
   const storedState = req.cookies ? req.cookies[STATE_KEY] : null;
@@ -110,7 +110,7 @@ router.get('/callback', (req, res) => {
   }
 });
 
-/**
+
 server.listen(3001, () => {
   console.log('listening on *:3000');
 });
