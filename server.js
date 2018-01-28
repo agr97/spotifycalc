@@ -2,28 +2,72 @@ const express = require('express');
 const path = require('path');
 const socketIo = require('socket.io');
 const authentication = require('./authentication');
+const encryptor = require('simple-encryptor');
 
 const app = express();
 const server = app.listen(8080);// http.createServer(app);
 const io = socketIo.listen(server);
-
+const SpotifyWebApi = require('spotify-web-api-node');
 
 app.use(express.static(path.join(__dirname, 'build')));
 
 
-const spotifyApi = authentication.SpotifyWebApi;
+const spotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
 authentication.spotifyRefreshToken(spotifyApi);
 setInterval(() => {
   authentication.spotifyRefreshToken(spotifyApi);
 }, 3590000);
 
-
 // spotifyApi.getPlaylist('121410021', '4FO2WXjS922s0RheaTYPZK')
 // spotifyApi.getPlaylist('nonnoobgod', '2eIlWTq7gSFGZJXnu0I5DP')
 
 
-io.sockets.on('connection', (socket) => {
-  console.log('a user connected');
+io.on('connection', onConnect);
+
+async function grantUserAccessToken(spotifyApi, code) {
+  try {
+    const data = await spotifyApi.authorizationCodeGrant(code);
+    spotifyApi.setAccessToken(data.body.access_token);
+    spotifyApi.setRefreshToken(data.body.refresh_token);
+    console.log('user token granted');
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function onConnect(socket) {
+  console.log(`Socket Connected: ${socket.id}`);
+  const clientSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
+
+  socket.emit('action', {
+    type: 'sendClientSpotifyApi',
+    clientSpotifyApi,
+  });
+
+
+  socket.on('action', (action) => {
+    switch (action.type) {
+      case 'server/recieveCallbackCode': {
+        break;
+      }
+      case 'server/requestUserToken': {
+        const userSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
+        grantUserAccessToken(userSpotifyApi, action.data);
+        socket.emit('action', { type: 'sendUserApi', data: userSpotifyApi });
+        break;
+      }
+      /**
+      if (action.type === 'server/sd') {
+        console.log('Got hello data!', action.data);
+        // socket.emit('action', {type:'message', data:'good day!'});
+      }
+       */
+      default: {
+        return true;
+      }
+    }
+  });
+
 
   socket.on('recieveClientPlaylist', (data, callback) => {
     console.log(`${data.username} ${data.id}`);
@@ -70,48 +114,4 @@ io.sockets.on('connection', (socket) => {
         console.log(err);
       });
   });
-});
-
-const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
-
-/**
- * The /callback endpoint - hit after the user logs in to spotifyApi
- * Verify that the state we put in the cookie matches the state in the query
- * parameter. Then, if all is good, redirect the user to the user page. If all
- * is not good, redirect the user to an error page
- 
-router.get('/callback', (req, res) => {
-  const { code, state } = req.query;
-  const storedState = req.cookies ? req.cookies[STATE_KEY] : null;
-  // first do state validation
-  if (state === null || state !== storedState) {
-    res.redirect('/#/error/state mismatch');
-  // if the state is valid, get the authorization code and pass it on to the client
-  } else {
-    res.clearCookie(STATE_KEY);
-    // Retrieve an access token and a refresh token
-    spotifyApi.authorizationCodeGrant(code).then(data => {
-      const { expires_in, access_token, refresh_token } = data.body;
-
-      // Set the access token on the API object to use it in later calls
-      spotifyApi.setAccessToken(access_token);
-      spotifyApi.setRefreshToken(refresh_token);
-
-      // use the access token to access the Spotify Web API
-      spotifyApi.getMe().then(({ body }) => {
-        console.log(body);
-      });
-
-      // we can also pass the token to the browser to make requests from there
-      res.redirect(`/#/user/${access_token}/${refresh_token}`);
-    }).catch(err => {
-      res.redirect('/#/error/invalid token');
-    });
-  }
-});
-
-
-server.listen(3001, () => {
-  console.log('listening on *:3000');
-});
-*/
+}

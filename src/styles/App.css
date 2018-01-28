@@ -7,18 +7,22 @@ body {
   height: auto;
   margin: auto;
   display: table-cell;
-
 }
 
 .header {
-  text-align: center;
-  max-height: 100%;
+  margin: 0px;
+  height: 150px; 
+  vertical-align: middle;
+  width: 100%;
   padding: 10px;
+}
+.App-title {
+  display: inline-block;
+  margin: 0px;
 }
 
 .playlist {
   display:table;
-  width: 90%;
   margin: 10px;
 }
 
