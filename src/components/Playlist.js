@@ -1,52 +1,17 @@
 import React, { Component } from 'react';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import blankalbum from './blankalbumart.png';
-import { Paper, TextField, RaisedButton, Tabs, Tab, FlatButton} from 'material-ui';
-import './App.css';
-import socketIo from 'socket.io-client';
+import { connect } from 'react-redux';
 import url from 'url';
-import { BrowserRouter as Router, Route, IndexRoute, browserHistory, Link } from 'react-router-dom';
-import SwipeableRoutes from 'react-swipeable-routes';
-import SpotifyWebApi from 'spotify-web-api-node';
+import { Paper, TextField, RaisedButton } from 'material-ui';
 
-const socket = socketIo.connect();
-
-const RedView = () => (
-  <div style={{ height: 300, backgroundColor: "red" }}>Red</div>
-);
-const BlueView = () => (
-  <div style={{ height: 300, backgroundColor: "blue" }}>Blue</div>
-);
-const GreenView = () => (
-  <div style={{ height: 300, backgroundColor: "green" }}>Green</div>
-);
-const YellowView = () => (
-  <div style={{ height: 300, backgroundColor: "yellow" }}>Yellow</div>
-);
-const OtherColorView = ({ match }) => (
-  <div style={{ height: 300, backgroundColor: match.params.color }}>{match.params.color}</div>
-)
-
-class App extends Component {
+class PlaylistClass extends Component {
   constructor(props) {
     super(props);
-    const scopes = ['user-read-private', 'user-read-email'];
-    const generateRandomString = N => (Math.random().toString(36)+Array(N).join('0')).slice(2, N+2);
-    const spotifyApi = new SpotifyWebApi({
-      clientId: '4cc10ec7899f45838fb6ee2fbad9f568',
-      redirectUri: 'http://localhost:3000/callback',
-    });
-    const state = generateRandomString(16);
-    var url = spotifyApi.createAuthorizeURL(scopes, state);
-    console.log(url);
 
     this.state = {
-      loadedPlaylist: '',
+      loadedPlaylist: props.loadedPlaylist,
       playlistUrl: '',
-      playlistAlbumArt: blankalbum,
-      playlistName: '',
+      playlistAlbumArt: props.loadedPlaylist.images[0].url,
+      playlistName: props.loadedPlaylist.name,
       playlistUsername: '',
       playlistDisplayUsername: '',
       textbarUsername: '',
@@ -59,16 +24,11 @@ class App extends Component {
       filesizeNormal: '',
       filesizeHigh: '',
       filesizeExtreme: '',
-      loginurl: url,
     };
 
     this.handleUrlChange = this.handleUrlChange.bind(this);
     this.submitUrl = this.submitUrl.bind(this);
     this.updatePlaylistInfo = this.updatePlaylistInfo.bind(this);
-  }
-
-  componentDidMount() {
-    
   }
 
   updatePlaylistInfo(playlist, playlistlength) {
@@ -97,7 +57,7 @@ class App extends Component {
 
   submitUrl(event) {
     event.preventDefault();
-
+/**
     if (this.state.playlistLoaded
       && this.state.textbarID === this.state.playlistID
       && this.state.textbarUsername === this.state.playlistUsername) {
@@ -116,7 +76,9 @@ class App extends Component {
         },
       );
     }
+     */
   }
+  
 
   handleUrlChange(event) {
     this.setState({ playlistUrl: event.target.value });
@@ -136,16 +98,11 @@ class App extends Component {
     }
   }
 
-  // https://open.spotify.com/user/nonnoobgod/playlist/2eIlWTq7gSFGZJXnu0I5DP
-  // (\/user\/)+(\w+)+(\/playlist\/)+(\w+)
-  
-
   render() {
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
-        <Paper className="header">
-          <h1 className="App-title">Spotify Calc</h1>
-          <div>Filesize information about a Spotify playlist</div>
+      //<div style={{ height: 300, backgroundColor: 'red' }}>Playlist</div>
+      <div>
+      <Paper className="playlist">          
           <form onSubmit={this.submitUrl}>
             <TextField
               errorText={this.state.errorText}
@@ -160,8 +117,6 @@ class App extends Component {
               label="Submit"
             />
           </form>
-        </Paper>
-        <Paper className="playlist">
           <img src={this.state.playlistAlbumArt} className="App-logo" alt="Album Art" />
           <div className="playlistMain">
             <div >{this.state.playlistName}</div>
@@ -173,46 +128,31 @@ class App extends Component {
           <h4>{this.state.filesizeNormal}</h4>
           <h4>{this.state.filesizeHigh}</h4>
           <h4>{this.state.filesizeExtreme}</h4>
-        </Paper>     
-       
-        <div>         
-    
-       <Tabs
-          onChange={this.handleChange}
-          value={this.state.slideIndex}
-          tabItemContainerStyle={{ position: 'fixed', bottom: '0' }}
-        >
-          <Tab label="Tab One" value={0} />
-          <Tab label="Tab Two" value={1} />
-          <Tab label="Tab Three" value={2} />
-        </Tabs>
-           
-        
-        <div>
-        <Link to="/red">Red</Link> |
-        <Link to="/blue">Blue</Link> | 
-        <Link to="/green">Green</Link> | 
-        <Link to="/yellow">Yellow</Link> | 
-        <Link to="/other/palevioletred">Pale Violet Red</Link> | 
-        <Link to="/other/saddlebrown">Saddle Brown</Link>
-        </div>
-        
-
-      <SwipeableRoutes>
-        <Route path="/" component={RedView} />
-        <Route path="/blue" component={BlueView} />
-        <Route path="/green" component={GreenView} />
-        <Route path="/yellow" component={YellowView} />
-        <Route path="/other/:color" component={OtherColorView} defaultParams={{color: 'grey'}} />
-      </SwipeableRoutes>
-      
-        </div>
-
-        <FlatButton label="Default" href={this.state.loginurl} />
-
-      </MuiThemeProvider>
+        </Paper>
+      </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    loadedPlaylist: state.playlist.loadedPlaylist,
+  }
+}
+const mapDispatchToProps = dispatch => {
+  return {
+    /**
+    onTodoClick: id => {
+      dispatch(toggleTodo(id))
+    }
+     */
+  }
+}
+
+
+const Playlist = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PlaylistClass);
+
+export default Playlist;

@@ -1,21 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import './styles/index.css';
+import App from './components/App';
 import registerServiceWorker from './registerServiceWorker';
 
-import createHistory from 'history/createBrowserHistory';
-import { BrowserRouter as Router, Route, IndexRoute, Redirect } from 'react-router-dom';
+import { store, history } from './store';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
-const history = createHistory();
+import { ConnectedRouter } from 'react-router-redux';
 
 const router = (
-  <Router history={history}>
-    <div>
-    <Route path="/" component={App} />
-    <Route path="/callback" />
-    </div>
-  </Router>
+  <Provider store={store}>
+    <ConnectedRouter history={history}>
+      <div>
+      <Route path="*" component={App} />
+      <Switch>        
+        <Redirect from="/callback" render={
+          store.dispatch({type: 'INITIALIZE', href: window.location.href})
+        } push to="/user"/>
+      </Switch>
+      </div>
+    </ConnectedRouter>
+  </Provider>
 );
 
 ReactDOM.render(router, document.getElementById('root'));
