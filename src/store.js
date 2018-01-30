@@ -4,6 +4,7 @@ import createHistory from 'history/createBrowserHistory';
 import defaultPlaylist from './globaltop50.json';
 import createSocketIoMiddleware from 'redux-socket.io';
 import socketIo from 'socket.io-client';
+import thunk from 'redux-thunk';
 
 // import root reducer
 import rootReducer from './reducers/index';
@@ -15,22 +16,19 @@ export const history = createHistory();
 
 const defaultState = {
   userBox: {
-    isLoggedin: false,
-    isFetching: false,
-    error: '',
-    userres: {
-      id: '',
-    },
-    defaultApi: '',
-    userApi: '',
-    currentApi: '',
-    loginurl: '',
-    encryptedSecret: '',
-    socketId: '',
+    fetchingUserApi: false,
+    clientSpotifyApi: '',
+    userSpotifyApi: '',
+    fetchingUserData: false,
+    isLoggedIn: false,
+    userData: '',
+    fetchingUserPlaylists: false,
+    userPlaylists: '',
   },
   playlist: {
+    fetchingPlaylist: false,
+    defaultPlaylist: defaultPlaylist,
     loadedPlaylist: defaultPlaylist,
-    playlistUrl: '',
   },
 };
 
@@ -38,7 +36,7 @@ export const store = createStore(
   rootReducer,
   defaultState,
   compose(
-    applyMiddleware(routerMiddleware(history), socketIoMiddleware),
+    applyMiddleware(routerMiddleware(history), socketIoMiddleware, thunk),
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
   ),
 );

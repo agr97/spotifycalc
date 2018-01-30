@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const socketIo = require('socket.io');
 const authentication = require('./authentication');
-const encryptor = require('simple-encryptor');
 
 const app = express();
 const server = app.listen(8080);// http.createServer(app);
@@ -12,10 +11,18 @@ const SpotifyWebApi = require('spotify-web-api-node');
 app.use(express.static(path.join(__dirname, 'build')));
 
 
-const spotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
-authentication.spotifyRefreshToken(spotifyApi);
+// Generates a new generic API for the client every hour. Does not allow for
+// access of user data, only playlist fetching.
+const clientSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
+(async () => {
+  await authentication.spotifyRefreshToken(clientSpotifyApi);
+  console.log(`clientSpotifyApi loaded  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
+})();
 setInterval(() => {
-  authentication.spotifyRefreshToken(spotifyApi);
+  (async () => {
+    await authentication.spotifyRefreshToken(clientSpotifyApi);
+    console.log(`clientSpotifyApi refreshed  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
+  })();
 }, 3590000);
 
 // spotifyApi.getPlaylist('121410021', '4FO2WXjS922s0RheaTYPZK')
@@ -24,25 +31,17 @@ setInterval(() => {
 
 io.on('connection', onConnect);
 
-async function grantUserAccessToken(spotifyApi, code) {
-  try {
-    const data = await spotifyApi.authorizationCodeGrant(code);
-    spotifyApi.setAccessToken(data.body.access_token);
-    spotifyApi.setRefreshToken(data.body.refresh_token);
-    console.log('user token granted');
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 function onConnect(socket) {
   console.log(`Socket Connected: ${socket.id}`);
-  const clientSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
 
-  socket.emit('action', {
-    type: 'sendClientSpotifyApi',
-    clientSpotifyApi,
-  });
+  // Send the newly connected client the server's generic API, and then sends the new one
+  // every hour after the server fetches a new one.
+  socket.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
+  console.log(`Sent initial Api to client  ${socket.id}`);
+  const sendNewClientApi = setInterval(() => {
+    socket.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
+    console.log(`Sent new Api to client  ${socket.id}`);
+  }, 3595000);
 
 
   socket.on('action', (action) => {
@@ -50,11 +49,19 @@ function onConnect(socket) {
       case 'server/recieveCallbackCode': {
         break;
       }
-      case 'server/requestUserToken': {
+      case 'server/userLogin': { (async () => {
+        socket.emit('action', { type: 'LOGIN_REQUEST' });
         const userSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
-        grantUserAccessToken(userSpotifyApi, action.data);
-        socket.emit('action', { type: 'sendUserApi', data: userSpotifyApi });
-        break;
+        try {
+          const data = await userSpotifyApi.authorizationCodeGrant(action.userCode);
+          userSpotifyApi.setAccessToken(data.body.access_token);
+          userSpotifyApi.setRefreshToken(data.body.refresh_token);
+          socket.emit('action', { type: 'LOGIN_SUCCESS', userSpotifyApi });
+        } catch (err) {
+          socket.emit('action', { type: 'LOGIN_FAILURE' });
+        }
+      })();
+      break;
       }
       /**
       if (action.type === 'server/sd') {
@@ -68,50 +75,8 @@ function onConnect(socket) {
     }
   });
 
-
-  socket.on('recieveClientPlaylist', (data, callback) => {
-    console.log(`${data.username} ${data.id}`);
-
-    spotifyApi.getPlaylist(data.username, data.id)
-      .then((playlist) => {
-        const songs = playlist.body.tracks.total;
-        console.log(songs);
-        let totallength = 0;
-        const totalrequests = parseInt(songs / 100) + 1;
-        console.log(totalrequests);
-
-        const currentStart = 0;
-
-        function temp() {
-          spotifyApi.getPlaylistTracks(data.username, data.id, { offset: currentStart, limit: 100, fields: 'items(track.duration_ms)' })
-            .then((tracks) => {
-              tracks.body.items.forEach((track) => {
-                totallength += track.track.duration_ms;
-              });
-            }, (err) => {
-              console.log('Something went wrong!', err);
-            });
-        }
-
-        for (let i = 0; i < totalrequests; i++) {
-          temp();
-        }
-
-        let sendTime = 250;
-        if (songs >= 1000) {
-          sendTime = 3000;
-        }
-
-        const t = setInterval(() => {
-          console.log(totallength);
-          callback('1', playlist.body, totallength);
-          clearInterval(t);
-        }, sendTime);
-
-        // length().then(callback('1', playlist.body, totallength));
-      }, (err) => {
-        callback('err', null);
-        console.log(err);
-      });
+  // Clears the interval that sends newly generated Api's to the client on disconnect
+  socket.on('disconnect', () => {
+    clearInterval(sendNewClientApi);
   });
 }

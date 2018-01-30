@@ -3,10 +3,6 @@ import { connect } from 'react-redux';
 import { FlatButton } from 'material-ui';
 import blankUser from '../blankuser.png';
 import SpotifyWebApi from 'spotify-web-api-node';
-import url from 'url';
-import queryString from 'query-string';
-import socketIo from 'socket.io-client';
-import { store } from '../store';
 
 class UserBoxClass extends Component {
   constructor(props) {
@@ -18,52 +14,25 @@ class UserBoxClass extends Component {
       clientId: '4cc10ec7899f45838fb6ee2fbad9f568',
       redirectUri: 'http://localhost:3000/callback',
     });
-    const state = generateRandomString(16);
-    const loginUrl = spotifyApi.createAuthorizeURL(scopes, state, true);
-
-    const loggedin = false;
-    const parsedcallbackUrl = queryString.parse(url.parse(props.callbackUrl).search);
-
-    // store.dispatch({ type: 'server/hello', data: 'Hello!' });
-    // you should automatically send the access token all the start
-    // from either the client or the server
-
-    store.subscribe(() => {
-      const api = store.getState().userBox.userApi;
-      async function login() {
-        try {
-          Object.setPrototypeOf(api, SpotifyWebApi.prototype);
-          const userdata = await api.getMe();
-          console.log(userdata);
-        } catch (err) {
-          console.log(err);
-        }
-      }
-
-      if (api !== '') {
-        login();
-      } else {
-        console.log('api not loaded yet');
-      }
-    });
-
-    if (parsedcallbackUrl.code !== undefined && parsedcallbackUrl.state.length === 16) {
-      console.log(parsedcallbackUrl.code);
-      store.dispatch({ type: 'server/requestUserToken', data: parsedcallbackUrl.code });
-    }
-
+    const loginState = generateRandomString(16);
+    const loginUrl = spotifyApi.createAuthorizeURL(scopes, loginState);
 
     this.state = {
-      isLoggedIn: loggedin,
-      // currentUser: props.userBox.user,
+      isLoggedIn: props.isLoggedIn,
+      currentUser: props.userData,
       loginUrl,
     };
 
-    this.Greeting = this.Greeting.bind(this);
+    this.LoginBox = this.LoginBox.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isLoggedIn) {
+      setTimeout(() => this.props.logout(), 3590000);
+    }
+  }
 
-  Greeting() {
+  LoginBox() {
     if (this.state.isLoggedIn) {
       return (<p>test</p>);
     }
@@ -73,7 +42,7 @@ class UserBoxClass extends Component {
   render() {
     return (
       <div>
-        {this.Greeting()}
+        {this.LoginBox()}
       </div>
     );
   }
@@ -82,10 +51,13 @@ class UserBoxClass extends Component {
 
 const mapStateToProps = state => ({
   callbackUrl: state.userBox.callbackUrl,
+  userSpotifyApi: state.userBox.userSpotifyApi,
+  clientSpotifyApi: state.userBox.clientSpotifyApi,
+  isLoggedIn: state.userBox.isLoggedIn,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+  logout: () => dispatch({ type: 'LOGOUT' }),
 });
 
 
