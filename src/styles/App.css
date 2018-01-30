@@ -18,6 +18,8 @@ body {
 }
 .App-title {
   display: inline-block;
+  text-align: center;
+  width: 50%;
   margin: 0px;
 }
 

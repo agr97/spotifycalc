@@ -9,6 +9,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import { ConnectedRouter } from 'react-router-redux';
+import { INITIALIZE } from './actions/actionCreators';
 
 const router = (
   <Provider store={store}>
@@ -17,7 +18,7 @@ const router = (
       <Route path="*" component={App} />
       <Switch>        
         <Redirect from="/callback" render={
-          store.dispatch({type: 'INITIALIZE', href: window.location.href})
+          store.dispatch(INITIALIZE(window.location.href))
         } push to="/user"/>
       </Switch>
       </div>

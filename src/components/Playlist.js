@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import url from 'url';
 import { Paper, TextField, RaisedButton } from 'material-ui';
+import { store } from '../store';
+import { GETPLAYLIST } from '../actions/actionCreators';
 
 class PlaylistClass extends Component {
   constructor(props) {
@@ -10,8 +12,8 @@ class PlaylistClass extends Component {
     this.state = {
       loadedPlaylist: props.loadedPlaylist,
       playlistUrl: '',
-      playlistAlbumArt: props.loadedPlaylist.images[0].url,
-      playlistName: props.loadedPlaylist.name,
+      playlistAlbumArt: '',
+      playlistName: '',
       playlistUsername: '',
       playlistDisplayUsername: '',
       textbarUsername: '',
@@ -57,28 +59,9 @@ class PlaylistClass extends Component {
 
   submitUrl(event) {
     event.preventDefault();
-/**
-    if (this.state.playlistLoaded
-      && this.state.textbarID === this.state.playlistID
-      && this.state.textbarUsername === this.state.playlistUsername) {
-      this.setState({ errorText: 'Already Loaded This Playlist', validUrl: false });
-    } else {
-      socket.emit(
-        'recieveClientPlaylist',
-        { username: this.state.textbarUsername, id: this.state.textbarID },
-        (error, playlist, playlistlength) => {
-          if (error !== 'err') {
-            this.setState({ loadedPlaylist: playlist, playlistLoaded: true });
-            this.updatePlaylistInfo(playlist, playlistlength);
-          } else {
-            this.setState({ errorText: 'Playlist Not Found on Spotify Servers', validUrl: false });
-          }
-        },
-      );
-    }
-     */
+    store.dispatch(GETPLAYLIST(this.state.textbarUsername, this.state.textbarID));
   }
-  
+
 
   handleUrlChange(event) {
     this.setState({ playlistUrl: event.target.value });
@@ -100,54 +83,47 @@ class PlaylistClass extends Component {
 
   render() {
     return (
-      //<div style={{ height: 300, backgroundColor: 'red' }}>Playlist</div>
+      // <div style={{ height: 300, backgroundColor: 'red' }}>Playlist</div>
       <div>
-      <Paper className="playlist">          
+        <div className="playlist">
           <form onSubmit={this.submitUrl}>
-            <TextField
+          <TextField
               errorText={this.state.errorText}
               fullWidth
               floatingLabelText="Enter A Spotify Playlist URL"
               value={this.state.playlistUrl}
               onChange={this.handleUrlChange}
             />
-            <RaisedButton
+          <RaisedButton
               disabled={!this.state.validUrl}
               type="submit"
               label="Submit"
             />
-          </form>
+        </form>
           <img src={this.state.playlistAlbumArt} className="App-logo" alt="Album Art" />
           <div className="playlistMain">
-            <div >{this.state.playlistName}</div>
-            <div >{this.state.playlistDisplayUsername}</div>
-            <div >{this.state.playlistFollowers}</div>
-          </div>
-        </Paper>
-        <Paper className="playlistInfo">
+          <div >{this.state.playlistName}</div>
+          <div >{this.state.playlistDisplayUsername}</div>
+          <div >{this.state.playlistFollowers}</div>
+        </div>
+        </div>
+        <div className="playlistInfo">
           <h4>{this.state.filesizeNormal}</h4>
           <h4>{this.state.filesizeHigh}</h4>
           <h4>{this.state.filesizeExtreme}</h4>
-        </Paper>
+        </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    loadedPlaylist: state.playlist.loadedPlaylist,
-  }
-}
-const mapDispatchToProps = dispatch => {
-  return {
-    /**
-    onTodoClick: id => {
-      dispatch(toggleTodo(id))
-    }
-     */
-  }
-}
+const mapStateToProps = state => ({
+  defaultPlaylist: state.playlist.defaultPlaylist,
+  loadedPlaylist: state.playlist.loadedPlaylist,
+});
+const mapDispatchToProps = dispatch => ({
+  //
+});
 
 
 const Playlist = connect(
