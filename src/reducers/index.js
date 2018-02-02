@@ -15,6 +15,8 @@ function userBox(state = {}, action) {
       return Object.assign({}, state, {
         isLoggedIn: false,
         userSpotifyApi: '',
+        userData: '',
+        userPlaylists: '',
       });
     }
     case 'LOGIN_REQUEST': {

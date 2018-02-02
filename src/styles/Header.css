@@ -1,0 +1,45 @@
+.title {
+    height: 100%;
+    left: 0;
+    display: inline-block;
+    margin: 3px;
+    font-size: x-large;
+    font-weight: bold;
+    max-width: 60%;
+}
+
+.button {
+    margin: 3px;
+    display: inline-block;
+    right: 0;
+    position: absolute;
+    max-width: 40%;
+}
+
+.topbar {
+    min-height: 45px;
+}
+
+.bottombar {
+    min-height: 50px;
+    max-height: 100px;
+}
+
+.profile {
+    text-align: center;
+}
+.profilepic {
+    display: inline-block;
+    height: 90px;    
+    margin: 3px;
+    vertical-align: middle;
+}
+.leftaccountdetails {
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+}
+.leftaccountdetailsitems {
+    margin: 3px;
+    vertical-align: middle;
+}

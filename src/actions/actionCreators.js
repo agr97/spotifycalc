@@ -35,7 +35,7 @@ export function INITIALIZE(callbackUrl) {
             await login();
           })();
         } else if (loginStatus === false) {
-          outerUnsubscribe();
+          //outerUnsubscribe();
         }
 
         async function login() {
@@ -83,11 +83,11 @@ export function GETPLAYLIST(userID, playlistID) {
     try { 
       (async () => {
         Object.setPrototypeOf(usedSpotifyApi, SpotifyWebApi.prototype);
-        const fields = 'collaborative,description,followers,id,images,name,owner,public,snapshot_id,tracks.total,type';
+        const fields = 'collaborative,description,external_urls,followers,id,images,name,owner,public,snapshot_id,tracks.total,type';
         const playlistBaseData = await usedSpotifyApi.getPlaylist(userID, playlistID, {fields: fields});
         const totalSongs = playlistBaseData.body.tracks.total;
         
-        const totalRequests = parseInt(totalSongs / 100) + 1;
+        const totalRequests = parseInt(totalSongs / 100, 10) + 1;
 
         let currentStart = 0;
         const localSongs = [];
@@ -149,7 +149,7 @@ export function GETPLAYLIST(userID, playlistID) {
         dispatch({
           type: 'PLAYLIST_SUCCESS',
           playlistData: {
-            playlistBaseData: playlistBaseData,
+            playlistBaseData: playlistBaseData.body,
             localSongs: localSongs,
             spotifySongs: spotifySongs,
             errorSongs: errorSongs,
@@ -164,11 +164,5 @@ export function GETPLAYLIST(userID, playlistID) {
       console.log(err);
       dispatch({ type: 'PLAYLIST_FAILURE' });
     }
-  };
-}
-
-export function LOGOUT() {
-  return function (dispatch) {
-    dispatch({ type: 'LOGOUT' });
   };
 }

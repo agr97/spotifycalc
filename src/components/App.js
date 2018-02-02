@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
+
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import baseTheme from 'material-ui/styles/baseThemes/darkBaseTheme';
+import * as Colors from 'material-ui/styles/colors';
+import { fade } from 'material-ui/utils/colorManipulator';
+
 import blankalbum from '../blankalbumart.png';
 import { Paper, TextField, RaisedButton, Tabs, Tab, FlatButton } from 'material-ui';
 import '../styles/App.css';
@@ -11,20 +16,40 @@ import { BrowserRouter as Router, Route, IndexRoute, browserHistory, Link } from
 import SwipeableRoutes from 'react-swipeable-routes';
 import SpotifyWebApi from 'spotify-web-api-node';
 
-import UserBox from './UserBox'
+import Header from './Header';
 import Playlist from './Playlist';
 // import User from './User';
 // import Stats from './Stats';
 // import About from './About';
 
+const getTheme = () => {
+  const overwrites = {
+    fontFamily: 'Montserrat, sans-serif',
+    palette: {
+      primary1Color: '#1DB954',
+      primary2Color: '#1DB954',
+      accent1Color: '#1DB954',
+      accent2Color: '#1DB954',
+      accent3Color: '#1DB954',
+      canvasColor: '#181818',
+    },
+    tabs: {
+      textColor: '#e8f5e9',
+      selectedTextColor: '#212121',
+      backgroundColor: '#1DB954',
+    },
+  };
+  return getMuiTheme(baseTheme, overwrites);
+};
+
 const BlueView = () => (
-  <div style={{ height: 300, backgroundColor: 'blue' }}>Blue</div>
+  <div style={{ height: '100px',backgroundColor: 'blue' }}>Blue</div>
 );
 const GreenView = () => (
-  <div style={{ height: 300, backgroundColor: 'green' }}>Green</div>
+  <div style={{ height: '300px', backgroundColor: 'green' }}>Green</div>
 );
 const YellowView = () => (
-  <div style={{ height: 300, backgroundColor: 'yellow' }}>Yellow</div>
+  <div style={{ height: '800px', backgroundColor: 'yellow' }}>Yellow</div>
 );
 
 class App extends Component {
@@ -32,72 +57,54 @@ class App extends Component {
     super(props);
 
     this.state = {
-      loadedPlaylist: '',
-      playlistUrl: '',
+      slideIndex: 0,
       playlistAlbumArt: blankalbum,
-      playlistName: '',
-      playlistUsername: '',
-      playlistDisplayUsername: '',
-      textbarUsername: '',
-      playlistID: '',
-      textbarID: '',
-      playlistFollowers: '',
-      errorText: '',
-      validUrl: false,
-      playlistLoaded: false,
-      filesizeNormal: '',
-      filesizeHigh: '',
-      filesizeExtreme: '',
     };
+
+    this.handleTabChange = this.handleTabChange.bind(this);
   }
-
-  componentWillMount() {
-
-  }
-
 
   // https://open.spotify.com/user/nonnoobgod/playlist/2eIlWTq7gSFGZJXnu0I5DP
   // (\/user\/)+(\w+)+(\/playlist\/)+(\w+)
 
+  handleTabChange(value) {
+    this.setState({
+      slideIndex: value,
+    });
+  }
 
   render() {
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
-        <div>
-        <div className="header">
-          <h1 className="App-title">Spotify Calc</h1>
-          <UserBox />
-        </div>
-        <div>
-
-          <Tabs
-            onChange={this.handleChange}
-            value={this.state.slideIndex}
-            tabItemContainerStyle={{ position: 'fixed', bottom: '0' }}
-          >
-            <Tab label="Tab One" value={0} />
-            <Tab label="Tab Two" value={1} />
-            <Tab label="Tab Three" value={2} />
-          </Tabs>
-
-
-          <div>
-            <Link to="/">Playlist</Link> |
-            <Link to="/user">User</Link> |
-            <Link to="/stats">Stats</Link> |
-            <Link to="/about">About</Link> |
+      <MuiThemeProvider muiTheme={getTheme()}>
+        <Paper>
+          <div className="header">
+          <Header className="userbox" />
           </div>
-
-
-          <SwipeableRoutes>
+          <div className="tabs">
+            <Tabs
+            onChange={this.handleTabChange}
+            value={this.state.slideIndex}
+            tabItemContainerStyle={{  }} //height: '10vh'
+          >
+            <Tab label="Playlist" value={0} />
+            <Tab label="User" value={1} />
+            <Tab label="Stats" value={2} />
+            <Tab label="About" value={3} />
+          </Tabs>
+          </div>
+          
+            <SwipeableRoutes
+            onChangeIndex={this.handleTabChange}
+            index={this.state.slideIndex}
+            containerStyle={{ height: '70vh' }}
+          >
             <Route path="/" component={Playlist} />
             <Route path="/user" component={BlueView} />
             <Route path="/stats" component={GreenView} />
             <Route path="/about" component={YellowView} />
           </SwipeableRoutes>
-
-        </div>
-        </div>
+          
+        </Paper>
       </MuiThemeProvider>
     );
   }
