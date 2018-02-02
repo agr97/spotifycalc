@@ -20,7 +20,7 @@ const defaultState = {
     clientSpotifyApi: '',
     userSpotifyApi: '',
     fetchingUserData: false,
-    isLoggedIn: false,
+    isLoggedIn: '',
     userData: '',
     fetchingUserPlaylists: false,
     userPlaylists: '',

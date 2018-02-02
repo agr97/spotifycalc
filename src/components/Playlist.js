@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import url from 'url';
-import { Paper, TextField, RaisedButton } from 'material-ui';
+import { TextField, RaisedButton } from 'material-ui';
 import { store } from '../store';
 import { GETPLAYLIST } from '../actions/actionCreators';
+import '../styles/Playlist.css';
 
 class PlaylistClass extends Component {
   constructor(props) {
@@ -84,8 +85,8 @@ class PlaylistClass extends Component {
   render() {
     return (
       // <div style={{ height: 300, backgroundColor: 'red' }}>Playlist</div>
-      <div>
-        <div className="playlist">
+      <div className="playlist">
+        <div>
           <form onSubmit={this.submitUrl}>
           <TextField
               errorText={this.state.errorText}

@@ -1,57 +1,24 @@
-body {
-  background-color: #303030;
-}
+html, body {
+  background-color: #181818;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+} 
 
-.App-logo {
-  width: 150px;
-  height: auto;
-  margin: auto;
-  display: table-cell;
+body {
+  background-color: #181818;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .header {
   margin: 0px;
-  height: 150px; 
   vertical-align: middle;
   width: 100%;
-  padding: 10px;
+  top: 0;
+  height: auto;
+  overflow: auto;
 }
-.App-title {
-  display: inline-block;
-  text-align: center;
-  width: 50%;
-  margin: 0px;
-}
-
-.playlist {
-  display:table;
-  margin: 10px;
-}
-
-.playlistMain {
-  display: table-cell;
-  text-align: left;
-  vertical-align: middle;
-  margin: 10px;
-}
-
-.playlistInfo {
-  margin: 10px;
-}
-
-/*
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-  object-fit: contain;
-*/
