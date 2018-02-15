@@ -10,8 +10,9 @@ const SpotifyWebApi = require('spotify-web-api-node');
 
 app.use(express.static(path.join(__dirname, 'build')));
 
+const REFRESH_TIME = 1000 * 60 * 59;
 
-// Generates a new generic API for the client every hour. Does not allow for
+// Sends a new generic API for the client every hour. Does not allow for
 // access of user data, only playlist fetching.
 const clientSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
 (async () => {
@@ -22,34 +23,25 @@ setInterval(() => {
   (async () => {
     await authentication.spotifyRefreshToken(clientSpotifyApi);
     console.log(`clientSpotifyApi refreshed  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
+    io.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
   })();
-}, 3590000);
+}, REFRESH_TIME);
 
 // spotifyApi.getPlaylist('121410021', '4FO2WXjS922s0RheaTYPZK')
 // spotifyApi.getPlaylist('nonnoobgod', '2eIlWTq7gSFGZJXnu0I5DP')
-
 
 io.on('connection', onConnect);
 
 function onConnect(socket) {
   console.log(`Socket Connected: ${socket.id}`);
 
-  // Send the newly connected client the server's generic API, and then sends the new one
-  // every hour after the server fetches a new one.
+  // Send the newly connected client the server's generic API
   socket.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
   console.log(`Sent initial Api to client  ${socket.id}`);
-  const sendNewClientApi = setInterval(() => {
-    socket.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
-    console.log(`Sent new Api to client  ${socket.id}`);
-  }, 3595000);
-
 
   socket.on('action', (action) => {
-    switch (action.type) {
-      case 'server/recieveCallbackCode': {
-        break;
-      }
-      case 'server/userLogin': { (async () => {
+    if (action.type === 'server/userLogin') {
+      (async () => {
         socket.emit('action', { type: 'LOGIN_REQUEST' });
         const userSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
         try {
@@ -61,22 +53,11 @@ function onConnect(socket) {
           socket.emit('action', { type: 'LOGIN_FAILURE' });
         }
       })();
-      break;
-      }
-      /**
-      if (action.type === 'server/sd') {
-        console.log('Got hello data!', action.data);
-        // socket.emit('action', {type:'message', data:'good day!'});
-      }
-       */
-      default: {
-        return true;
-      }
     }
   });
 
   // Clears the interval that sends newly generated Api's to the client on disconnect
   socket.on('disconnect', () => {
-    clearInterval(sendNewClientApi);
+
   });
 }

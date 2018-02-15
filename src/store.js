@@ -17,7 +17,6 @@ export const history = createHistory();
 const defaultState = {
   userBox: {
     fetchingUserApi: false,
-    clientSpotifyApi: '',
     userSpotifyApi: '',
     fetchingUserData: false,
     isLoggedIn: '',
@@ -26,8 +25,10 @@ const defaultState = {
     userPlaylists: '',
   },
   playlist: {
+    error: '',
+    clientSpotifyApi: '',
     fetchingPlaylist: false,
-    defaultPlaylist: defaultPlaylist,
+    defaultPlaylist,
     loadedPlaylist: defaultPlaylist,
   },
 };
