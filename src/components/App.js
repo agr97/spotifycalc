@@ -42,15 +42,14 @@ const getTheme = () => {
   return getMuiTheme(baseTheme, overwrites);
 };
 
-const BlueView = () => (
-  <div style={{ height: '100px',backgroundColor: 'blue' }}>Blue</div>
+const ViewGen = (height, backgroundColor) => () => (
+  <div style={{ height, backgroundColor }}>
+    backgroundColor
+  </div>
 );
-const GreenView = () => (
-  <div style={{ height: '300px', backgroundColor: 'green' }}>Green</div>
-);
-const YellowView = () => (
-  <div style={{ height: '800px', backgroundColor: 'yellow' }}>Yellow</div>
-);
+const BlueView = ViewGen('100px', 'blue');
+const GreenView = ViewGen('300px', 'green');
+const YellowView = ViewGen('800px', 'yellow');
 
 class App extends Component {
   constructor(props) {
@@ -96,7 +95,7 @@ class App extends Component {
             <SwipeableRoutes
             onChangeIndex={this.handleTabChange}
             index={this.state.slideIndex}
-            containerStyle={{ height: '70vh' }}
+            containerStyle={{ height: '79vh' }}
           >
             <Route path="/" component={Playlist} />
             <Route path="/user" component={BlueView} />

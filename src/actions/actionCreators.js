@@ -15,154 +15,144 @@ import queryString from 'query-string';
 import url from 'url';
 import { store } from '../store';
 import SpotifyWebApi from 'spotify-web-api-node';
+import { login, parseSpotifySongs, parseAudioFeatures } from './actionCreatorHelpers';
 
 export function INITIALIZE(callbackUrl) {
-  return function (dispatch, getState) {
+  return async function initialize(dispatch, getState) {
     dispatch({ type: 'INITIALIZE STARTED' });
     const parsedCallbackUrl = queryString.parse(url.parse(callbackUrl).search);
 
-    if (parsedCallbackUrl.code === undefined) {
-      // Do Nothing;
-    } else if (parsedCallbackUrl.error !== undefined) {
+    if (parsedCallbackUrl.code === undefined) return;
+
+    if (parsedCallbackUrl.error !== undefined) {
       dispatch({ type: 'LOGIN_FAILURE' });
-    } else if (parsedCallbackUrl.code !== undefined && parsedCallbackUrl.state.length === 16) {
+      return;
+    }
+
+    if (parsedCallbackUrl.code && parsedCallbackUrl.state.length === 16) {
       dispatch({ type: 'server/userLogin', userCode: parsedCallbackUrl.code });
+      let outerUnsubscribe;
       const unsubscribe = store.subscribe(() => {
         const loginStatus = getState().userBox.isLoggedIn;
         if (loginStatus === true) {
           outerUnsubscribe();
           (async () => {
-            await login();
+            await login(dispatch, getState);
           })();
         } else if (loginStatus === false) {
-          //outerUnsubscribe();
-        }
-
-        async function login() {
-          dispatch({ type: 'USERDATA_REQUEST' });
-          const userSpotifyApi = getState().userBox.userSpotifyApi;
-          Object.setPrototypeOf(userSpotifyApi, SpotifyWebApi.prototype);
-
-          try {
-            const userData = await userSpotifyApi.getMe();
-            console.log(userData.body);
-            dispatch({ type: 'USERDATA_SUCCESS', userData: userData.body });
-
-            dispatch({ type: 'USERPLAYLISTS_REQUEST' });
-            try {
-              const userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
-              console.log(userPlaylists.body);
-              dispatch({ type: 'USERPLAYLISTS_SUCCESS', userPlaylists: userPlaylists.body });
-            } catch (err) {
-              dispatch({ type: 'USERPLAYLISTS_FAILURE' });
-            }
-          } catch (err) {
-            console.log(err);
-            dispatch({ type: 'USERDATA_FAILURE' });
-          }
+          outerUnsubscribe();
         }
       });
-      function outerUnsubscribe() { unsubscribe(); }
+      outerUnsubscribe = unsubscribe;
     }
   };
 }
 
 
 export function GETPLAYLIST(userID, playlistID) {
-  return function (dispatch, getState) {
-    var a = window.performance.now();
+  return async function getPlaylist(dispatch, getState) {
+    const t0 = window.performance.now();
 
+    // Determine which api to use for this playlist call
     dispatch({ type: 'PLAYLIST_REQUEST' });
     const userLoggedIn = getState().userBox.isLoggedIn;
-    let usedSpotifyApi = getState().userBox.clientSpotifyApi;
+    let usedSpotifyApi = getState().playlist.clientSpotifyApi;
     if (userLoggedIn) {
       usedSpotifyApi = getState().userBox.userSpotifyApi;
-      console.log('using user api');
     }
-    
-    try { 
-      (async () => {
-        Object.setPrototypeOf(usedSpotifyApi, SpotifyWebApi.prototype);
-        const fields = 'collaborative,description,external_urls,followers,id,images,name,owner,public,snapshot_id,tracks.total,type';
-        const playlistBaseData = await usedSpotifyApi.getPlaylist(userID, playlistID, {fields: fields});
-        const totalSongs = playlistBaseData.body.tracks.total;
-        
-        const totalRequests = parseInt(totalSongs / 100, 10) + 1;
+    Object.setPrototypeOf(usedSpotifyApi, SpotifyWebApi.prototype);
 
-        let currentStart = 0;
-        const localSongs = [];
-        const spotifySongs = [];
-        let errorSongs = 0;
-              
-        for (let i = 0; i < totalRequests; i++) {
-          let tracks = await usedSpotifyApi.getPlaylistTracks(userID, playlistID, { offset: currentStart, limit: 100 });
-          tracks.body.items.forEach(track => {
+    // Returned as objects on success
+    let playlistBaseData = null;
+    let spotifyAudioFeaturesAverage = [];
+    let spotifySongStats = {};
+    let fetchingTime = 0;
 
-            if (track.track == null) {
-              errorSongs++;
-            } else if (track.is_local === true) {
-              let trackData = {
-                duration_ms: track.track.duration_ms,
-                artists: track.track.artists.length,
-              }
-              localSongs.push(trackData);                               
-            } else {
-              let trackData = {
-                id: track.track.id,
-                duration_ms: track.track.duration_ms,
-                explicit: track.track.explicit,
-                artists: track.track.artists.length,
-                popularity: track.track.popularity,
-              }
-              spotifySongs.push(trackData);
-            }
-            
-          });
-          currentStart += 100;
-        }
+    // Used as helper variables
+    let spotifySongIds = [];
+    let totalSongs = 0;
+    const spotifyRequestSize = 100;
 
-        console.log(localSongs.length);
-        console.log(spotifySongs.length);
-        console.log(errorSongs);
+    try {
+      const fields = 'collaborative,description,external_urls,followers,id,images,name,owner,public,snapshot_id,tracks.total,type';
+      playlistBaseData = await usedSpotifyApi.getPlaylist(userID, playlistID, { fields });
+    } catch (err) {
+      console.log(err);
+      dispatch({
+        type: 'PLAYLIST_FAILURE',
+        error: err.statusCode,
+      });
+      return;
+    }
 
+    try {
+      totalSongs = playlistBaseData.body.tracks.total;
+
+      const tracksArray = [];
+      const playlistRequests = [];
+
+      for (let i = 0; i < totalSongs; i += spotifyRequestSize) {
+        playlistRequests.push(usedSpotifyApi.getPlaylistTracks(userID, playlistID, { offset: i, limit: spotifyRequestSize }));
+      }
+
+      await Promise.all(playlistRequests).then((data) => {
+        data.forEach((tracks) => {
+          tracks.body.items.forEach(track => tracksArray.push(track));
+        });
+      });
+
+      [spotifySongStats, spotifySongIds] = parseSpotifySongs(tracksArray);
+    } catch (err) {
+      console.log(err);
+      dispatch({
+        type: 'PLAYLIST_FAILURE',
+        error: err.statusCode,
+      });
+      return;
+    }
+
+    // Need to add a wait time before more requests to help prevent rejections from the Spotify Api
+    let requestWait = 100;
+    if (playlistBaseData.body.tracks.total > 5000) {
+      requestWait = 4000;
+    }
+
+    setTimeout(async () => {
+      try {
         const spotifyAudioFeatures = [];
-        const totalAudioFeaturesRequests = parseInt(spotifySongs.length / 100) + 1;
+        const audioFeatureRequests = [];
 
-        const spotifySongIds = spotifySongs.map(track => track.id);
-        let start = 0;
-
-        for (let i = 0; i < totalAudioFeaturesRequests; i++) {
-          let ids = spotifySongIds.slice(start, start + 100);
-          let audiofeatures = await usedSpotifyApi.getAudioFeaturesForTracks(ids);
-          console.log(audiofeatures);
-          audiofeatures.body.audio_features.forEach(audiofeatures => spotifyAudioFeatures.push(audiofeatures));
-
-          start += 100;
+        for (let start = 0; start < spotifySongIds.length; start += spotifyRequestSize) {
+          audioFeatureRequests.push(usedSpotifyApi
+            .getAudioFeaturesForTracks(spotifySongIds.slice(start, start + spotifyRequestSize)));
         }
 
-        console.log(spotifyAudioFeatures);
+        await Promise.all(audioFeatureRequests).then((data) => {
+          data.forEach(request => request.body.audio_features.forEach(feature => spotifyAudioFeatures.push(feature)));
+        });
 
-        var b = window.performance.now();
-        const fetchingTime = b - a;
-        console.log("Fetching Playlist Took " + fetchingTime + " milliseconds.")
+        spotifyAudioFeaturesAverage = parseAudioFeatures(spotifyAudioFeatures);
+
+        const t1 = window.performance.now();
+        fetchingTime = (t1 - t0).toFixed(0);
+        console.log(`Fetching Playlist Took ${fetchingTime} milliseconds.`);
 
         dispatch({
           type: 'PLAYLIST_SUCCESS',
           playlistData: {
             playlistBaseData: playlistBaseData.body,
-            localSongs: localSongs,
-            spotifySongs: spotifySongs,
-            errorSongs: errorSongs,
-            spotifyAudioFeatures: spotifyAudioFeatures,
-            fetchingTime: fetchingTime,
+            spotifyAudioFeaturesAverage,
+            spotifySongStats,
+            fetchingTime,
           },
         });
-
-        
-      })();
-    } catch (err) {
-      console.log(err);
-      dispatch({ type: 'PLAYLIST_FAILURE' });
-    }
+      } catch (err) {
+        console.log(err);
+        dispatch({
+          type: 'PLAYLIST_FAILURE',
+          error: err.statusCode,
+        });
+      }
+    }, requestWait);
   };
 }

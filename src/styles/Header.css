@@ -23,23 +23,20 @@
 .bottombar {
     min-height: 50px;
     max-height: 100px;
-}
-
-.profile {
     text-align: center;
 }
+
 .profilepic {
     display: inline-block;
     height: 90px;    
     margin: 3px;
     vertical-align: middle;
 }
-.leftaccountdetails {
+.accountdetails {
     display: inline-block;
     vertical-align: middle;
-    height: 100%;
 }
-.leftaccountdetailsitems {
+.accountdetailsitems {
     margin: 3px;
     vertical-align: middle;
 }

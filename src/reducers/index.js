@@ -1,16 +1,11 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-//import userBox from './userBox';
-//import playlist from './playlist';
+// import userBox from './userBox';
+// import playlist from './playlist';
 
 function userBox(state = {}, action) {
   switch (action.type) {
-    case 'sendClientSpotifyApi': {
-      return Object.assign({}, state, {
-        clientSpotifyApi: action.clientSpotifyApi,
-      });
-    }
     case 'LOGOUT': {
       return Object.assign({}, state, {
         isLoggedIn: false,
@@ -76,6 +71,11 @@ function userBox(state = {}, action) {
 
 function playlist(state = {}, action) {
   switch (action.type) {
+    case 'sendClientSpotifyApi': {
+      return Object.assign({}, state, {
+        clientSpotifyApi: action.clientSpotifyApi,
+      });
+    }
     case 'PLAYLIST_REQUEST': {
       return Object.assign({}, state, {
         fetchingPlaylist: true,
@@ -84,12 +84,14 @@ function playlist(state = {}, action) {
     case 'PLAYLIST_FAILURE': {
       return Object.assign({}, state, {
         fetchingPlaylist: false,
+        error: action.error,
       });
     }
     case 'PLAYLIST_SUCCESS': {
       return Object.assign({}, state, {
         loadedPlaylist: action.playlistData,
         fetchingPlaylist: false,
+        error: '',
       });
     }
     default:
@@ -98,8 +100,8 @@ function playlist(state = {}, action) {
 }
 
 const rootReducer = combineReducers({
-  userBox: userBox,
-  playlist: playlist,
+  userBox,
+  playlist,
   router: routerReducer,
 });
 

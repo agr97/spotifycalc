@@ -33,30 +33,23 @@ class HeaderClass extends Component {
     }
   }
 
+  // center circular progess
   LoginBox() {
     if (this.props.isLoggedIn && this.props.fetchingUserData) {
-      return(
+      return (
         <CircularProgress />
-      )
-    } else if (this.props.isLoggedIn && !this.props.fetchingUserData) {
-      console.log('gets here');
-      let profilePicture = blankUser;
-      let displayName = this.props.userData.id;
-      let country = this.props.userData.country;
-      let followers = this.props.userData.followers.total;
-      let accountType = this.props.userData.product;
-
-      if (this.props.userData.images[0] !== undefined) {
-        profilePicture = this.props.userData.images[0].url;
-      }
-      if (this.props.userData.display_name !== null) {
-        displayName = this.props.userData.display_name;
-      }
-      if (accountType === 'open' || accountType === 'free') {
-        accountType = 'Free';
-      } else {
-        accountType = 'Premium';
-      }
+      );
+    }
+    
+    if (this.props.isLoggedIn && !this.props.fetchingUserData) {
+      const { userData } = this.props;
+      const profilePicture = userData.images[0] ? userData.images[0].url : blankUser;
+      const displayName = userData.display_name || userData.id;
+      let country = userData.country;
+      let followers = userData.followers.total;
+      const accountType = (['open', 'free'].indexOf(userData.product) >= 0)
+        ? 'Free'
+        : 'Premium';
 
       return (
         <div>
@@ -65,32 +58,30 @@ class HeaderClass extends Component {
             <img src={logoutbutton} onClick={this.props.logout} className="button"/>
           </div>
           <div className="bottombar">
-            <div className="profile">
-              <img src={profilePicture} className="profilepic"/>
-              <div className="accountdetails">
-                <div className="accountdetailsitems">{displayName}</div>
-                <div className="accountdetailsitems">{accountType} Account</div>
-                <div className="accountdetailsitems">Country: {country}</div>
-                <div className="accountdetailsitems">Followers: {followers}</div>
-              </div>
+            <img src={profilePicture} className="profilepic"/>
+            <div className="accountdetails">
+              <div className="accountdetailsitems">{displayName}</div>
+              <div className="accountdetailsitems">{accountType} Account</div>
+              <div className="accountdetailsitems">Country: {country}</div>
+              <div className="accountdetailsitems">Followers: {followers}</div>
             </div>
           </div>
         </div>
       );
-    } else {
-      return (
-        <div>
-          <div className="topbar">
-            <div className="title">Playlist Calculator</div>
-            <a href={this.state.loginUrl}><img src={loginbutton} className="button" /></a>
-          </div>
-          <div className="bottombar">
-            <div className="description">Returns details and stats about a Spotify Playlist.</div>
-            <div className="logintext">Login using Spotify to easily access your playlists.</div>
-          </div>
-        </div>
-      );
     }
+    
+    return (
+      <div>
+        <div className="topbar">
+          <div className="title">Playlist Calculator</div>
+          <a href={this.state.loginUrl}><img src={loginbutton} className="button" /></a>
+        </div>
+        <div className="bottombar">
+          <div className="description">Returns statistics about a Spotify Playlist.</div>
+          <div className="logintext">Login using Spotify to access your playlists.</div>
+        </div>
+      </div>
+    );
   }
 
   render() {
