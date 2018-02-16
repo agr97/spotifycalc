@@ -1,12 +1,11 @@
+import createSocketIoMiddleware from 'redux-socket.io';
+import socketIo from 'socket.io-client';
+import thunk from 'redux-thunk';
 import { createStore, compose, applyMiddleware } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 import defaultPlaylist from './globaltop50.json';
-import createSocketIoMiddleware from 'redux-socket.io';
-import socketIo from 'socket.io-client';
-import thunk from 'redux-thunk';
 
-// import root reducer
 import rootReducer from './reducers/index';
 
 const socket = socketIo.connect();

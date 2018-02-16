@@ -1,6 +1,7 @@
 .playlist {
-  min-height: 1200px;
   width: 100%;
+  height: auto;
+  margin-bottom: 20px;
 }
 
 .playlistForm {
@@ -11,6 +12,12 @@
 .playlistData {
   height: 100%;
   margin: 5px;
+}
+
+.playlistLoading {
+    margin-top: 5px;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .playlistHeader {
@@ -49,4 +56,10 @@
 .playlistMainDescription {
     text-align: center;
     font-weight: lighter;
+}
+
+.spotifyIcon {
+    width: 21px;
+    margin: 12px;
+    vertical-align: middle;
 }
