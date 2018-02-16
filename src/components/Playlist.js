@@ -1,35 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import url from 'url';
-import { TextField, RaisedButton, CircularProgress, Popover, Menu } from 'material-ui';
+import { TextField, RaisedButton, CircularProgress, Divider } from 'material-ui';
 import { store } from '../store';
 import { GETPLAYLIST } from '../actions/actionCreators';
 import '../styles/Playlist.css';
 import blankalbum from '../blankalbumart.png';
+import spotifyIcon from '../Spotify_Icon_RGB_Green.png';
 
 class PlaylistClass extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      localOpen: false, //
-      spotifyOpen: false,
-      loadedPlaylist: props.loadedPlaylist,
       playlistUrl: '',
-      playlistAlbumArt: '',
-      playlistName: '',
-      playlistUsername: '',
-      playlistDisplayUsername: '',
       textbarUsername: '',
-      playlistID: '',
       textbarID: '',
-      playlistFollowers: '',
       errorText: '',
       validUrl: false,
-      playlistLoaded: false,
-      filesizeNormal: '',
-      filesizeHigh: '',
-      filesizeExtreme: '',
     };
 
     this.handleUrlChange = this.handleUrlChange.bind(this);
@@ -37,9 +25,6 @@ class PlaylistClass extends Component {
     this.playlistData = this.playlistData.bind(this);
     this.searchBar = this.searchBar.bind(this);
     this.playlistStats = this.playlistStats.bind(this);
-    this.spotifyHandleClick = this.spotifyHandleClick.bind(this);
-    this.localHandleClick = this.localHandleClick.bind(this);
-    this.handleRequestClose = this.handleRequestClose.bind(this);
   }
 
   submitUrl(event) {
@@ -55,7 +40,6 @@ class PlaylistClass extends Component {
     const parsedUrl = url.parse(event.target.value);
     const { pathname, hostname } = parsedUrl;
 
-    console.log(url.parse(event.target.value));
     if (hostname === 'open.spotify.com' && pathname.match(urlRegexp)) {
       const playlistData = urlRegexp.exec(pathname);
       this.setState({ errorText: '', validUrl: true });
@@ -68,11 +52,32 @@ class PlaylistClass extends Component {
 
 
   searchBar() {
-    if (this.props.clientSpotifyApi === '') {
+    if (this.props.clientSpotifyApi === '' && this.props.userSpotifyApi === '') {
       return (
-        <div>Waiting For Client Spotify Api From Server</div>
+        <div className="playlistLoading">
+          <div>Waiting For Spotify Api From Server</div>
+          <CircularProgress style={{ marginTop: '10px' }} />
+        </div>
       );
     }
+
+    if (this.props.fetchingPlaylist) {
+      return (
+        <div className="playlistLoading">
+          <div>Fetching Playlist. Longer Playlists have longer fetching times</div>
+          <CircularProgress style={{ marginTop: '10px' }} />
+        </div>
+      );
+    }
+
+    let errorText;
+    switch (this.props.error) {
+      case 404: errorText = 'Playlist Not Found.'; break;
+      case 429: errorText = 'Too many requests. Wait longer between requesting again.'; break;
+      case 401: errorText = 'Api expired. Try refreshing the page before making another request.'; break;
+      default: errorText = null; break;
+    }
+
 
     // put fetching time here
     return (
@@ -84,6 +89,8 @@ class PlaylistClass extends Component {
             floatingLabelText="Enter A Spotify Playlist URL"
             value={this.state.playlistUrl}
             onChange={this.handleUrlChange}
+            autoFocus
+            onFocus={() => this.setState({playlistUrl: ''})}
           />
           <RaisedButton
             disabled={!this.state.validUrl}
@@ -91,42 +98,11 @@ class PlaylistClass extends Component {
             label="Get Playlist From Spotify"
           />
         </form>
+        <div className="playlistMainItem">{errorText}</div>
       </div>
     );
   }
 
-  spotifyHandleClick = (event) => {
-    // This prevents ghost click.
-    event.preventDefault();
-
-    this.setState({
-      spotifyOpen: true,
-      spotifyAnchorEl: event.currentTarget,
-    });
-  };
-
-  localHandleClick = (event) => {
-    // This prevents ghost click.
-    event.preventDefault();
-
-    this.setState({
-      localOpen: true,
-      localAnchorEl: event.currentTarget,
-    });
-  };
-
-  handleRequestClose = (target) => {
-    if (target === 'spotify') {
-      this.setState({
-        spotifyOpen: false,
-      });
-    }
-    if (target === 'local') {
-      this.setState({
-        localOpen: false,
-      });
-    }
-  };
 
   playlistStats() {
     const playlistBaseData = this.props.loadedPlaylist.playlistBaseData;
@@ -140,7 +116,7 @@ class PlaylistClass extends Component {
       const hours = Math.floor(minutes / 60);
       minutes %= 60;
 
-      return `${hours} hrs ${minutes} min ${seconds} s ${(milliseconds % 1000).toFixed(0)} ms`;
+      return `${hours} hrs ${minutes} min ${seconds} s`;
     }
 
     let playlistStats;
@@ -154,108 +130,53 @@ class PlaylistClass extends Component {
         </div>
       );
     } else if (spotifySongStats.totalLocalSongs === 0) {
-      const megabyesNormal = (spotifySongStats.spotifyTotalDuration / 1000 * 12 / 1024).toFixed(2);
-      const megabyesHigh = (spotifySongStats.spotifyTotalDuration / 1000 * 20 / 1024).toFixed(2);
-      const megabyesExtreme = ((spotifySongStats.spotifyTotalDuration / 1000 * 40) / 1024).toFixed(2);
-
       playlistStats = (
         <div>
           <div>Total Songs: {spotifySongStats.totalSpotifySongs}</div>
           <div>Average Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
-          <div>Total Duration: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
-          <div>Average Song Duration: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
+          <div>Total Length: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
+          <div>Average Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
           <div>Average Artists Per Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
           <div>{spotifySongStats.spotifyTotalExplicit} Explicit Songs or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
-          <div>Downloading at Normal Quality: {megabyesNormal} MB</div>
-          <div>Downloading at High Quality: {megabyesHigh} MB</div>
-          <div>Downloading at Extreme Quality: {megabyesExtreme} MB</div>
+          <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
+          <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
+          <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
         </div>
       );
     } else if (spotifySongStats.totalSpotifySongs === 0) {
-      const megabyesNormal = (spotifySongStats.spotifyTotalDuration / 1000 * 12 / 1024).toFixed(2);
-      const megabyesHigh = (spotifySongStats.spotifyTotalDuration / 1000 * 20 / 1024).toFixed(2);
-      const megabyesExtreme = ((spotifySongStats.spotifyTotalDuration / 1000 * 40) / 1024).toFixed(2);
-
       playlistStats = (
         <div>
-          <div>Total Songs: {spotifySongStats.totalSpotifySongs}</div>
+          <div>Total Songs: {spotifySongStats.totalLocalSongs}</div>
           <div>Total Duration: {getTime(spotifySongStats.localTotalDuration)}</div>
           <div>Average Song Duration: {getTime(spotifySongStats.localAverageDuration)}</div>
           <div>Average Artists Per Song: {spotifySongStats.localAverageArtists.toFixed(2)}</div>
-          <div>Downloading at Normal Quality: {megabyesNormal} MB</div>
-          <div>Downloading at High Quality: {megabyesHigh} MB</div>
-          <div>Downloading at Extreme Quality: {megabyesExtreme} MB</div>
+          <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
+          <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
+          <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
         </div>
       );
     } else {
-      const megabyesNormal = (spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2);
-      const megabyesHigh = (spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2);
-      const megabyesExtreme = ((spotifySongStats.totalDuration / 1000 * 40) / 1024).toFixed(2);
-
       playlistStats = (
         <div>
           <div>Total Songs: {spotifySongStats.totalSongs}</div>
-          <div>Total Duration: {getTime(spotifySongStats.totalDuration)}</div>
-          <div>Average Song Duration: {getTime(spotifySongStats.totalAverageDuration)}</div>
-          <div>Downloading at Normal Quality: {megabyesNormal} MB</div>
-          <div>Downloading at High Quality: {megabyesHigh} MB</div>
-          <div>Downloading at Extreme Quality: {megabyesExtreme} MB</div>
-
-        <RaisedButton 
-          onClick={this.spotifyHandleClick}
-          label="Spotify Stats"
-        />
-        <Popover
-          open={this.state.spotifyOpen}
-          anchorEl={this.state.spotifyAnchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={() => this.handleRequestClose('spotify')}
-        >
-        <Menu>
+          <div>Total Length: {getTime(spotifySongStats.totalDuration)}</div>
+          <div>Average Song Length: {getTime(spotifySongStats.totalAverageDuration)}</div>
+          <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
+          <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
+          <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
+          <Divider style={{ margin: '4px 0px 4px' }} />
           <div>Total Spotify Songs: {spotifySongStats.totalSpotifySongs}</div>
           <div>Average Spotify Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
-          <div>Total Spotify Song Duration: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
-          <div>Average Spotify Song Duration: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
+          <div>Total Spotify Song Length: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
+          <div>Average Spotify Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
           <div>Average Artists Per Spotify  Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
           <div>{spotifySongStats.spotifyTotalExplicit} Explicit Spotify Songs or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
-          <div>Downloading Spotify Songs at Normal Quality: {megabyesNormal} MB</div>
-          <div>Downloading Spotify Songs at High Quality: {megabyesHigh} MB</div>
-          <div>Downloading Spotify Songs at Extreme Quality: {megabyesExtreme} MB</div>
-          </Menu>
-        </Popover>
-{/** 
-          <div>Total Spotify Songs: {spotifySongStats.spotifyTotalSongs}</div>
-          <div>Average Spotify Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
-          <div>Total Spotify Song Duration: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
-          <div>Average Spotify Song Duration: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
-          <div>Average Artists Per Spotify  Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
-          <div>{spotifySongStats.spotifyTotalExplicit} Explicit Spotify Songs or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
-          <div>Downloading Spotify Songs at Normal Quality: {megabyesNormal} MB</div>
-          <div>Downloading Spotify Songs at High Quality: {megabyesHigh} MB</div>
-          <div>Downloading Spotify Songs at Extreme Quality: {megabyesExtreme} MB</div>
-          */}
-          <RaisedButton 
-          onClick={this.localHandleClick}
-          label="Local Stats"
-        />
-          <Popover
-          open={this.state.localOpen}
-          anchorEl={this.state.localAnchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={() => this.handleRequestClose('local')}
-        >
-          <Menu>
+          <Divider style={{ margin: '4px 0px 4px' }} />
           <div>Total Local Songs: {spotifySongStats.totalLocalSongs}</div>
-          <div>Total Local Song Duration: {getTime(spotifySongStats.localTotalDuration)}</div>
-          <div>Average Local Song Duration: {getTime(spotifySongStats.localAverageDuration)}</div>
+          <div>Total Local Song Length: {getTime(spotifySongStats.localTotalDuration)}</div>
+          <div>Average Local Song Length: {getTime(spotifySongStats.localAverageDuration)}</div>
           <div>Average Artists Per Local Song: {spotifySongStats.localAverageArtists.toFixed(2)}</div>
-          <div>Downloading Local Songs at Normal Quality: {megabyesNormal} MB</div>
-          <div>Downloading Local Songs at High Quality: {megabyesHigh} MB</div>
-          <div>Downloading Local Songs at Extreme Quality: {megabyesExtreme} MB</div>
-          </Menu>
-          </Popover>
+
         </div>
       );
     }
@@ -313,6 +234,7 @@ class PlaylistClass extends Component {
     return (
       <div>
         {playlistStats}
+        <Divider style={{ margin: '4px 0px 4px' }} />
         {playlistAudioFeatures}
       </div>
     );
@@ -330,6 +252,9 @@ class PlaylistClass extends Component {
     const playlistPublic = playlistBaseData.public ? 'Public' : 'Private';
 
     const displayName = playlistBaseData.owner.display_name || playlistBaseData.owner.id;
+    const htmlDescription = (new window.DOMParser()).parseFromString(playlistBaseData.description, 'text/html');
+    let textDescription = htmlDescription.getElementsByTagName('body')[0].innerHTML;
+    if (playlistBaseData.description === null) { textDescription = null ;}
 
     return (
       <div className="playlistData">
@@ -339,14 +264,16 @@ class PlaylistClass extends Component {
             <div className="playlistHeaderTextItem">{playlistPublic}</div>
             <div className="playlistHeaderTextItem">{playlistCollaborative}</div>
             <div className="playlistHeaderTextItem">Followers: {playlistBaseData.followers.total}</div>
-            <a className="playlistHeaderTextItem" target="_blank" href={playlistBaseData.external_urls.spotify}>Link to Spotify</a>
+            <a className="playlistHeaderTextItem" target="_blank" href={playlistBaseData.external_urls.spotify}>
+              Link To Playlist On <img className="spotifyIcon" src={spotifyIcon} alt="Spotify Icon" />
+            </a>
             <div className="playlistHeaderTextItem">{fetchingTime}</div>
           </div>
         </div>
         <div className="playlistMain">
           <div className="playlistMainTitle">{playlistBaseData.name}</div>
           <div className="playlistMainItem">Created By: {displayName}</div>
-          <div className="playlistMainDescription">{playlistBaseData.description}</div>
+          <div className="playlistMainDescription">{textDescription}</div>
         </div>
         <div className="playlistSongs">
           {this.playlistStats()}
@@ -370,18 +297,13 @@ class PlaylistClass extends Component {
 const mapStateToProps = state => ({
   error: state.playlist.error,
   fetchingPlaylist: state.playlist.fetchingPlaylist,
+  userSpotifyApi: state.playlist.userSpotifyApi,
   clientSpotifyApi: state.playlist.clientSpotifyApi,
   defaultPlaylist: state.playlist.defaultPlaylist,
   loadedPlaylist: state.playlist.loadedPlaylist,
 });
-const mapDispatchToProps = dispatch => ({
-  //
-});
 
 
-const Playlist = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(PlaylistClass);
+const Playlist = connect(mapStateToProps)(PlaylistClass);
 
 export default Playlist;

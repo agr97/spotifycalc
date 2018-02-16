@@ -1,4 +1,4 @@
-.title {
+.headerTitle {
     height: 100%;
     left: 0;
     display: inline-block;
@@ -8,7 +8,7 @@
     max-width: 60%;
 }
 
-.button {
+.headerButton {
     margin: 3px;
     display: inline-block;
     right: 0;
@@ -16,27 +16,49 @@
     max-width: 40%;
 }
 
-.topbar {
-    min-height: 45px;
+.headerTopbar {
+    height: 40px;
 }
 
-.bottombar {
-    min-height: 50px;
-    max-height: 100px;
+.headerLoading {
+    height: 70px;
+    vertical-align: center;
+    text-align: right;
+}
+
+
+.headerBottombarLogout {
+    height: 70px;
     text-align: center;
 }
 
-.profilepic {
+.headerBottombarLogin {
+    height: 70px;
+    text-align: right;
+    margin-right: 10px;
+}
+
+.headerProfilepic {
     display: inline-block;
-    height: 90px;    
+    height: 64px;    
     margin: 3px;
     vertical-align: middle;
 }
-.accountdetails {
+.headerAccountdetails {
     display: inline-block;
     vertical-align: middle;
 }
-.accountdetailsitems {
-    margin: 3px;
+.headerAccountdetailsitems {
+    margin: 1px;
+    font-size: small;
     vertical-align: middle;
+}
+
+.headerDescription {
+    font-size: large;
+}
+
+.headerDetailText {
+    font-size: 14px;
+    margin: 1px;
 }

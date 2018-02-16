@@ -35,9 +35,18 @@ class HeaderClass extends Component {
 
   // center circular progess
   LoginBox() {
+
     if (this.props.isLoggedIn && this.props.fetchingUserData) {
       return (
-        <CircularProgress />
+        <div>
+          <div className="headerTopbar">
+            <div className="headerTitle">Playlist Calculator</div>
+            <img src={logoutbutton} onClick={this.props.logout} className="headerButton"/>
+          </div>
+          <div className="headerLoading" >
+           <CircularProgress style={{textAlign: 'right', marginRight: '40px', marginTop: '15px'}}/>
+          </div>
+        </div>
       );
     }
     
@@ -53,17 +62,17 @@ class HeaderClass extends Component {
 
       return (
         <div>
-          <div className="topbar">
-            <div className="title">Playlist Calculator</div>
-            <img src={logoutbutton} onClick={this.props.logout} className="button"/>
+          <div className="headerTopbar">
+            <div className="headerTitle">Playlist Calculator</div>
+            <img src={logoutbutton} onClick={this.props.logout} className="headerButton"/>
           </div>
-          <div className="bottombar">
-            <img src={profilePicture} className="profilepic"/>
-            <div className="accountdetails">
-              <div className="accountdetailsitems">{displayName}</div>
-              <div className="accountdetailsitems">{accountType} Account</div>
-              <div className="accountdetailsitems">Country: {country}</div>
-              <div className="accountdetailsitems">Followers: {followers}</div>
+          <div className="headerBottombarLogin">
+            <img src={profilePicture} className="headerProfilepic"/>
+            <div className="headerAccountdetails">
+              <div className="headerAccountdetailsitems">{displayName}</div>
+              <div className="headerAccountdetailsitems">{accountType} Account</div>
+              <div className="headerAccountdetailsitems">Country: {country}</div>
+              <div className="headerAccountdetailsitems">Followers: {followers}</div>
             </div>
           </div>
         </div>
@@ -72,13 +81,14 @@ class HeaderClass extends Component {
     
     return (
       <div>
-        <div className="topbar">
-          <div className="title">Playlist Calculator</div>
-          <a href={this.state.loginUrl}><img src={loginbutton} className="button" /></a>
+        <div className="headerTopbar">
+          <div className="headerTitle">Playlist Calculator</div>
+          <a href={this.state.loginUrl}><img src={loginbutton} className="headerButton" /></a>
         </div>
-        <div className="bottombar">
-          <div className="description">Returns statistics about a Spotify Playlist.</div>
-          <div className="logintext">Login using Spotify to access your playlists.</div>
+        <div className="headerBottombarLogout">
+          <div className="headerDescription">Returns statistics about a Spotify Playlist.</div>
+          <div className="headerDetailText">Login using Spotify to access your playlists.</div>
+          <div className="headerDetailText">Go to About for details about the Spotify Statistics.</div>
         </div>
       </div>
     );
