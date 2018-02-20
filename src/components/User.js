@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { CircularProgress, List, ListItem } from 'material-ui';
 import { store } from '../store';
 import { GETPLAYLIST } from '../actions/actionCreators';
+import blankalbumart from '../blankuser.png';
 import '../styles/User.css';
 
 class UserClass extends Component {
@@ -50,7 +51,7 @@ class UserClass extends Component {
     const userPlaylists = this.props.userPlaylists.items.map(playlist =>
       (<ListItem onClick={() => this.onClickPlaylist(playlist)} innerDivStyle={{ padding: '10px', overflow: 'auto'}}>
         <div className="userPlaylistMain">
-          <img className="userPlaylistImage" src={playlist.images[0].url} />
+          <img className="userPlaylistImage" src={playlist.images.length === 0 ? blankalbumart : playlist.images[0].url} />
           <div className="userPlaylistTitle">{playlist.name}</div>
         </div>
       </ListItem>));

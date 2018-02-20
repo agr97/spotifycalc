@@ -146,6 +146,15 @@ export function GETPLAYLIST(userID, playlistID) {
             fetchingTime,
           },
         });
+
+        dispatch({
+          type: 'server/getPlaylist',
+          playlistData: {
+            playlistBaseData: playlistBaseData.body,
+            spotifyAudioFeaturesAverage,
+            spotifySongStats,
+          },
+        });
       } catch (err) {
         console.log(err);
         dispatch({

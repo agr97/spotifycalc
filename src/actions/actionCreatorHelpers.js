@@ -21,6 +21,7 @@ export async function login(dispatch, getState) {
     const userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
     console.log(userPlaylists.body);
     dispatch({ type: 'USERPLAYLISTS_SUCCESS', userPlaylists: userPlaylists.body });
+    dispatch({ type: 'server/getUserData', userData: userData.body, userPlaylistsTotal: userPlaylists.body.total });
   } catch (err) {
     dispatch({ type: 'USERPLAYLISTS_FAILURE' });
   }
@@ -34,10 +35,16 @@ export function parseSpotifySongs(tracksArray) {
 
   let localTotalDuration = 0;
   let localTotalArtists = 0;
+  let localAverageDuration = 0;
+  let localAverageArtists = 0;
   let spotifyTotalDuration = 0;
   let spotifyTotalArtists = 0;
   let spotifyTotalExplicit = 0;
   let spotifyTotalPopularity = 0;
+  let spotifyAverageDuration = 0;
+  let spotifyAverageArtists = 0;
+  let spotifyAverageExplicit = 0;
+  let spotifyAveragePopularity = 0;
 
   tracksArray.forEach((track) => {
     if (track.track == null) {
@@ -68,24 +75,25 @@ export function parseSpotifySongs(tracksArray) {
     spotifyTotalPopularity += track.track.popularity;
   });
 
-  const localAverageDuration = parseFloat((localTotalDuration / localSongs.length).toFixed(4));
-  const localAverageArtists = parseFloat((localTotalArtists / localSongs.length).toFixed(4));
-  const spotifyAverageDuration = parseFloat((spotifyTotalDuration / spotifySongs.length).toFixed(4));
-  const spotifyAverageArtists = parseFloat((spotifyTotalArtists / spotifySongs.length).toFixed(4));
-  const spotifyAverageExplicit = parseFloat((spotifyTotalExplicit / spotifySongs.length).toFixed(4));
-  const spotifyAveragePopularity = parseFloat((spotifyTotalPopularity / spotifySongs.length).toFixed(4));
+  const totalAverageDuration = parseFloat(((localTotalDuration + spotifyTotalDuration) / (localSongs.length + spotifySongs.length)).toFixed(4)) || 0;
+  localAverageDuration = parseFloat((localTotalDuration / localSongs.length).toFixed(4)) || 0;
+  localAverageArtists = parseFloat((localTotalArtists / localSongs.length).toFixed(4)) || 0;
+  spotifyAverageDuration = parseFloat((spotifyTotalDuration / spotifySongs.length).toFixed(4)) || 0;
+  spotifyAverageArtists = parseFloat((spotifyTotalArtists / spotifySongs.length).toFixed(4)) || 0;
+  spotifyAverageExplicit = parseFloat((spotifyTotalExplicit / spotifySongs.length).toFixed(4)) || 0;
+  spotifyAveragePopularity = parseFloat((spotifyTotalPopularity / spotifySongs.length).toFixed(4)) || 0;
 
   spotifySongStats = {
     totalSongs: localSongs.length + spotifySongs.length,
     totalDuration: localTotalDuration + spotifyTotalDuration,
-    totalAverageDuration: (localTotalDuration + spotifyTotalDuration) / (localSongs.length + spotifySongs.length),
+    totalAverageDuration,
     totalErrorsongs: errorSongs,
-    totalLocalSongs: localSongs.length,
+    localTotalSongs: localSongs.length,
     localTotalDuration,
     localTotalArtists,
     localAverageDuration,
     localAverageArtists,
-    totalSpotifySongs: spotifySongs.length,
+    spotifyTotalSongs: spotifySongs.length,
     spotifyTotalDuration,
     spotifyTotalArtists,
     spotifyTotalExplicit,

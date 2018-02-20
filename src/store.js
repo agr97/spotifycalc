@@ -29,6 +29,7 @@ const defaultState = {
     fetchingPlaylist: false,
     defaultPlaylist,
     loadedPlaylist: defaultPlaylist,
+    databaseStats: '',
   },
 };
 
