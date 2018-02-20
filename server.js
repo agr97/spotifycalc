@@ -2,15 +2,21 @@ const express = require('express');
 const path = require('path');
 const socketIo = require('socket.io');
 const authentication = require('./authentication');
+const serverHelpers = require('./serverHelpers');
+const { Pool } = require('pg');
 
 const app = express();
-const server = app.listen(8080);// http.createServer(app);
+const server = app.listen(8080);
 const io = socketIo.listen(server);
 const SpotifyWebApi = require('spotify-web-api-node');
 
+const pool = new Pool(authentication.poolData);
+
 app.use(express.static(path.join(__dirname, 'build')));
 
-const REFRESH_TIME = 1000 * 60 * 59;
+const API_REFRESH_TIME = 1000 * 60 * 59;
+const DATABASE_REFRESHTIME = 1000 * 60 * 10;
+
 
 // Sends a new generic API for the client every hour. Does not allow for
 // access of user data, only playlist fetching.
@@ -25,19 +31,29 @@ setInterval(() => {
     console.log(`clientSpotifyApi refreshed  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
     io.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
   })();
-}, REFRESH_TIME);
+}, API_REFRESH_TIME);
 
-// spotifyApi.getPlaylist('121410021', '4FO2WXjS922s0RheaTYPZK')
-// spotifyApi.getPlaylist('nonnoobgod', '2eIlWTq7gSFGZJXnu0I5DP')
+// Parses Data from the database to send to the user as statistics.
+// Resends the data every 10 minutes.
+let databaseStats;
+(async () => {
+  databaseStats = await serverHelpers.getDatabaseStats(pool);
+})();
+setInterval(() => {
+  (async () => {
+    databaseStats = await serverHelpers.getDatabaseStats(pool);
+    io.emit('action', { type: 'sendClientDatabaseStats', databaseStats });
+  })();
+}, DATABASE_REFRESHTIME);
+
 
 io.on('connection', onConnect);
 
 function onConnect(socket) {
-  console.log(`Socket Connected: ${socket.id}`);
-
-  // Send the newly connected client the server's generic API
+  // Send the newly connected client the server's generic API and database stats.
   socket.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
-  console.log(`Sent initial Api to client  ${socket.id}`);
+  socket.emit('action', { type: 'sendClientDatabaseStats', databaseStats });
+  console.log(`Sent initial data to client  ${socket.id}`);
 
   socket.on('action', (action) => {
     if (action.type === 'server/userLogin') {
@@ -54,10 +70,34 @@ function onConnect(socket) {
         }
       })();
     }
-  });
+    if (action.type === 'server/getPlaylist') {
+      (async () => {
+        try {
+          const values = serverHelpers.parseUserPlaylist(action.playlistData);
 
-  // Clears the interval that sends newly generated Api's to the client on disconnect
-  socket.on('disconnect', () => {
+          const querypart1 = 'INSERT INTO playlists VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id, owner) ';
+          const querypart2 = 'DO UPDATE SET name=$3, description=$4, followers=$5, public=$6, collaborative=$7, ';
+          const querypart3 = 'snapshot_id=$8, "songStats"=$9, "audioFeatures"=$10;';
 
+          await pool.query(querypart1 + querypart2 + querypart3, values);
+        } catch (err) {
+          console.log(err);
+        }
+      })();
+    }
+    if (action.type === 'server/getUserData') {
+      (async () => {
+        try {
+          const values = serverHelpers.parseUserUser(action)
+
+          const querypart1 = 'INSERT INTO users VALUES($1,$2,$3,$4) ON CONFLICT (id) ';
+          const querypart2 = 'DO UPDATE SET id=$1, followers=$2, product=$3, playlists=$4;';
+
+          await pool.query(querypart1 + querypart2, values);
+        } catch (err) {
+          console.log(err);
+        }
+      })();
+    }
   });
 }

@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { CircularProgress } from 'material-ui';
+import SpotifyWebApi from 'spotify-web-api-node';
+import ReactCountdownClock from 'react-countdown-clock';
 import blankUser from '../blankuser.png';
 import loginbutton from '../loginbutton.png';
 import logoutbutton from '../logoutbutton.png';
-import SpotifyWebApi from 'spotify-web-api-node';
+
 import '../styles/Header.css';
 
 class HeaderClass extends Component {
   constructor(props) {
     super(props);
 
-    const scopes = ['user-read-birthdate', 'user-read-email', 'user-read-private', 'playlist-read-private'];
+    const scopes = ['user-read-private', 'playlist-read-private', 'playlist-read-collaborative'];
     const generateRandomString = N => (Math.random().toString(36) + Array(N).join('0')).slice(2, N + 2);
     const spotifyApi = new SpotifyWebApi({
       clientId: '4cc10ec7899f45838fb6ee2fbad9f568',
@@ -67,6 +69,10 @@ class HeaderClass extends Component {
             <img src={logoutbutton} onClick={this.props.logout} className="headerButton"/>
           </div>
           <div className="headerBottombarLogin">
+            <div className="headerBottomBarTimerText">Logout In</div>
+            <div className="headerBottomBarTimer">
+              <ReactCountdownClock seconds={3590} color="#1DB954" size={65} />
+            </div>
             <img src={profilePicture} className="headerProfilepic"/>
             <div className="headerAccountdetails">
               <div className="headerAccountdetailsitems">{displayName}</div>

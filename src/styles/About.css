@@ -1,0 +1,17 @@
+.about {
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.aboutContent {
+	margin: 5px;
+}
+
+.aboutEULAButton {
+	text-align: center;
+}
+
+.aboutDescribeFeature {
+	margin: 5px 0px 0px;
+}

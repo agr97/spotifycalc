@@ -5,7 +5,7 @@ import { TextField, RaisedButton, CircularProgress, Divider } from 'material-ui'
 import { store } from '../store';
 import { GETPLAYLIST } from '../actions/actionCreators';
 import '../styles/Playlist.css';
-import blankalbum from '../blankalbumart.png';
+import blankalbumart from '../blankalbumart.png';
 import spotifyIcon from '../Spotify_Icon_RGB_Green.png';
 
 class PlaylistClass extends Component {
@@ -105,9 +105,7 @@ class PlaylistClass extends Component {
 
 
   playlistStats() {
-    const playlistBaseData = this.props.loadedPlaylist.playlistBaseData;
-    const spotifyAudioFeaturesAverage = this.props.loadedPlaylist.spotifyAudioFeaturesAverage;
-    const spotifySongStats = this.props.loadedPlaylist.spotifySongStats;
+    const { spotifyAudioFeaturesAverage, spotifySongStats } = this.props.loadedPlaylist;
 
     function getTime(milliseconds) {
       let seconds = Math.floor(milliseconds / 1000);
@@ -129,27 +127,27 @@ class PlaylistClass extends Component {
         No songs in this playlist to analyze
         </div>
       );
-    } else if (spotifySongStats.totalLocalSongs === 0) {
+    } else if (spotifySongStats.localTotalSongs === 0) {
       playlistStats = (
         <div>
-          <div>Total Songs: {spotifySongStats.totalSpotifySongs}</div>
-          <div>Average Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
+          <div>Total Songs: {spotifySongStats.spotifyTotalSongs}</div>
+          <div>Avg Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
           <div>Total Length: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
-          <div>Average Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
-          <div>Average Artists Per Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
+          <div>Avg Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
+          <div>Avg Artists Per Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
           <div>{spotifySongStats.spotifyTotalExplicit} Explicit Songs or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
           <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
           <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
           <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
         </div>
       );
-    } else if (spotifySongStats.totalSpotifySongs === 0) {
+    } else if (spotifySongStats.spotifyTotalSongs === 0) {
       playlistStats = (
         <div>
-          <div>Total Songs: {spotifySongStats.totalLocalSongs}</div>
+          <div>Total Songs: {spotifySongStats.localTotalSongs}</div>
           <div>Total Duration: {getTime(spotifySongStats.localTotalDuration)}</div>
-          <div>Average Song Duration: {getTime(spotifySongStats.localAverageDuration)}</div>
-          <div>Average Artists Per Song: {spotifySongStats.localAverageArtists.toFixed(2)}</div>
+          <div>Avg Song Duration: {getTime(spotifySongStats.localAverageDuration)}</div>
+          <div>Avg Artists Per Song: {spotifySongStats.localAverageArtists.toFixed(2)}</div>
           <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
           <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
           <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
@@ -160,22 +158,22 @@ class PlaylistClass extends Component {
         <div>
           <div>Total Songs: {spotifySongStats.totalSongs}</div>
           <div>Total Length: {getTime(spotifySongStats.totalDuration)}</div>
-          <div>Average Song Length: {getTime(spotifySongStats.totalAverageDuration)}</div>
+          <div>Avg Song Length: {getTime(spotifySongStats.totalAverageDuration)}</div>
           <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
           <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
           <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
           <Divider style={{ margin: '4px 0px 4px' }} />
-          <div>Total Spotify Songs: {spotifySongStats.totalSpotifySongs}</div>
-          <div>Average Spotify Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
+          <div>Total Spotify Songs: {spotifySongStats.spotifyTotalSongs}</div>
+          <div>Avg Spotify Song Popularity: {spotifySongStats.spotifyAveragePopularity.toFixed(2)}</div>
           <div>Total Spotify Song Length: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
-          <div>Average Spotify Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
-          <div>Average Artists Per Spotify  Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
-          <div>{spotifySongStats.spotifyTotalExplicit} Explicit Spotify Songs or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
+          <div>Avg Spotify Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
+          <div>Avg Artists Per Spotify Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
+          <div>{spotifySongStats.spotifyTotalExplicit} Explicit or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
           <Divider style={{ margin: '4px 0px 4px' }} />
-          <div>Total Local Songs: {spotifySongStats.totalLocalSongs}</div>
+          <div>Total Local Songs: {spotifySongStats.localTotalSongs}</div>
           <div>Total Local Song Length: {getTime(spotifySongStats.localTotalDuration)}</div>
-          <div>Average Local Song Length: {getTime(spotifySongStats.localAverageDuration)}</div>
-          <div>Average Artists Per Local Song: {spotifySongStats.localAverageArtists.toFixed(2)}</div>
+          <div>Avg Local Song Length: {getTime(spotifySongStats.localAverageDuration)}</div>
+          <div>Avg Artists Per Local Song: {spotifySongStats.localAverageArtists.toFixed(2)}</div>
 
         </div>
       );
@@ -241,20 +239,19 @@ class PlaylistClass extends Component {
   }
 
   playlistData() {
-    const playlistBaseData = this.props.loadedPlaylist.playlistBaseData;
-    const spotifyAudioFeaturesAverage = this.props.loadedPlaylist.spotifyAudioFeaturesAverage;
-    const spotifySongStats = this.props.loadedPlaylist.spotifySongStats;
-    let fetchingTime = `Fetching Time: ${this.props.loadedPlaylist.fetchingTime}`;
+    const { playlistBaseData } = this.props.loadedPlaylist;
+
+    let fetchingTime = `Fetching Time: ${this.props.loadedPlaylist.fetchingTime} ms`;
     if (this.props.loadedPlaylist.fetchingTime === '0') { fetchingTime = null; }
 
-    const playlistImage = playlistBaseData.images[0].url || blankalbum;
+    const playlistImage = playlistBaseData.images.length === 0 ? blankalbumart : playlistBaseData.images[0].url;
     const playlistCollaborative = playlistBaseData.collaborative ? 'Collaborative' : null;
     const playlistPublic = playlistBaseData.public ? 'Public' : 'Private';
 
     const displayName = playlistBaseData.owner.display_name || playlistBaseData.owner.id;
     const htmlDescription = (new window.DOMParser()).parseFromString(playlistBaseData.description, 'text/html');
     let textDescription = htmlDescription.getElementsByTagName('body')[0].innerHTML;
-    if (playlistBaseData.description === null) { textDescription = null ;}
+    if (playlistBaseData.description === null) { textDescription = null; }
 
     return (
       <div className="playlistData">
@@ -297,7 +294,7 @@ class PlaylistClass extends Component {
 const mapStateToProps = state => ({
   error: state.playlist.error,
   fetchingPlaylist: state.playlist.fetchingPlaylist,
-  userSpotifyApi: state.playlist.userSpotifyApi,
+  userSpotifyApi: state.userBox.userSpotifyApi,
   clientSpotifyApi: state.playlist.clientSpotifyApi,
   defaultPlaylist: state.playlist.defaultPlaylist,
   loadedPlaylist: state.playlist.loadedPlaylist,

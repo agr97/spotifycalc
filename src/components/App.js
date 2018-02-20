@@ -15,8 +15,8 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import Header from './Header';
 import Playlist from './Playlist';
 import User from './User';
-// import Stats from './Stats';
-// import About from './About';
+import Stats from './Stats';
+import About from './About';
 
 const getTheme = () => {
   const overwrites = {
@@ -89,13 +89,14 @@ class App extends Component {
           <SwipeableRoutes
             onChangeIndex={this.handleTabChange}
             index={this.state.slideIndex}
-            containerStyle={{height: 'calc(100vh - 158px)'}}
-            slideStyle={{height: 'auto'}}
+            containerStyle={{ height: 'calc(100vh - 158px)' }}
+            slideStyle={{ height: 'auto' }}
+            disableLazyLoading
           >
             <Route path="/" component={Playlist} />
             <Route path="/user" component={User} />
-            <Route path="/stats" component={GreenView} />
-            <Route path="/about" component={YellowView} />
+            <Route path="/stats" component={Stats} />
+            <Route path="/about" component={About} />
           </SwipeableRoutes>
 
         </Paper>

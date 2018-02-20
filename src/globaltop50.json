@@ -7,7 +7,7 @@
     },
     "followers": {
       "href": null,
-      "total": 11967479
+      "total": 11979755
     },
     "id": "37i9dQZEVXbMDoHDwVN2tF",
     "images": [
@@ -29,46 +29,46 @@
       "uri": "spotify:user:spotifycharts"
     },
     "public": false,
-    "snapshot_id": "HEgB2zIoa02U71/GF09S3uerFivHZw0456sWK8dnDTjnqxYrx2cNOHXvf/I27uG5dHF/LDNLIng=",
+    "snapshot_id": "I2wlH6xpFM1slIEEAlx6IuerFivHZw0456sWK8dnDTjnqxYrx2cNOHXvf/I27uG5dHF/LDNLIng=",
     "tracks": {
       "total": 50
     },
     "type": "playlist"
   },
   "spotifyAudioFeaturesAverage": {
-    "danceability": 0.704,
-    "energy": 0.6824,
-    "key": 5.24,
-    "loudness": -5.5273,
+    "danceability": 0.6963,
+    "energy": 0.6843,
+    "key": 5.22,
+    "loudness": -5.4859,
     "mode": 0.6,
-    "speechiness": 0.1066,
-    "acousticness": 0.1222,
+    "speechiness": 0.102,
+    "acousticness": 0.1403,
     "instrumentalness": 0.0042,
-    "liveness": 0.147,
-    "valence": 0.4879,
-    "tempo": 121.2327,
-    "duration_ms": 211691.5,
-    "time_signature": 3.98
+    "liveness": 0.1462,
+    "valence": 0.4867,
+    "tempo": 122.5744,
+    "duration_ms": 210275.58,
+    "time_signature": 3.96
   },
   "spotifySongStats": {
     "totalSongs": 50,
-    "totalDuration": 10584554,
-    "totalAverageDuration": 211691.08,
+    "totalDuration": 10513758,
+    "totalAverageDuration": 210275.16,
     "totalErrorsongs": 0,
-    "totalLocalSongs": 0,
+    "localTotalSongs": 0,
     "localTotalDuration": 0,
     "localTotalArtists": 0,
-    "localAverageDuration": null,
-    "localAverageArtists": null,
-    "totalSpotifySongs": 50,
-    "spotifyTotalDuration": 10584554,
+    "localAverageDuration": 0,
+    "localAverageArtists": 0,
+    "spotifyTotalSongs": 50,
+    "spotifyTotalDuration": 10513758,
     "spotifyTotalArtists": 93,
-    "spotifyTotalExplicit": 18,
-    "spotifyTotalPopularity": 4587,
-    "spotifyAverageDuration": 211691.08,
+    "spotifyTotalExplicit": 17,
+    "spotifyTotalPopularity": 4582,
+    "spotifyAverageDuration": 210275.16,
     "spotifyAverageArtists": 1.86,
-    "spotifyAverageExplicit": 0.36,
-    "spotifyAveragePopularity": 91.74
+    "spotifyAverageExplicit": 0.34,
+    "spotifyAveragePopularity": 91.64
   },
   "fetchingTime": "0"
 }

@@ -1,0 +1,27 @@
+.stats {
+  width: 100%;
+  height: auto;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+  
+
+.statsLoading {
+  text-align: center;
+  margin: 5px;
+}
+
+.statsMainTop {
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.statsMainBottom {
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.statsPlaylistType {
+  margin: 5px;
+  display: inline-block;
+}

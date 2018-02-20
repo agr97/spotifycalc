@@ -1,64 +1,81 @@
 .headerTitle {
-    height: 100%;
-    left: 0;
-    display: inline-block;
-    margin: 3px;
-    font-size: x-large;
-    font-weight: bold;
-    max-width: 60%;
+  height: 100%;
+  left: 0;
+  display: inline-block;
+  margin: 3px;
+  font-size: x-large;
+  font-weight: bold;
+  max-width: 60%;
 }
 
 .headerButton {
-    margin: 3px;
-    display: inline-block;
-    right: 0;
-    position: absolute;
-    max-width: 40%;
+  margin: 3px;
+  display: inline-block;
+  right: 0;
+  position: absolute;
+  max-width: 40%;
 }
 
 .headerTopbar {
-    height: 40px;
+  height: 40px;
 }
 
 .headerLoading {
-    height: 70px;
-    vertical-align: center;
-    text-align: right;
+  height: 70px;
+  vertical-align: center;
+  text-align: right;
 }
 
 
 .headerBottombarLogout {
-    height: 70px;
-    text-align: center;
+  height: 70px;
+  text-align: center;
 }
 
 .headerBottombarLogin {
-    height: 70px;
-    text-align: right;
-    margin-right: 10px;
+  height: 70px;
+  text-align: right;
+  margin-right: 10px;
+}
+
+.headerBottomBarTimerText {
+  vertical-align: middle;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.react-countdown-clock {
+  width: 65px;
+  height: 65px;
+  text-align: left;
+}
+
+.headerBottomBarTimer {
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .headerProfilepic {
-    display: inline-block;
-    height: 64px;    
-    margin: 3px;
-    vertical-align: middle;
+  display: inline-block;
+  height: 64px;    
+  margin: 3px;
+  vertical-align: middle;
 }
 .headerAccountdetails {
-    display: inline-block;
-    vertical-align: middle;
+  display: inline-block;
+  vertical-align: middle;
 }
 .headerAccountdetailsitems {
-    margin: 1px;
-    font-size: small;
-    vertical-align: middle;
+  margin: 1px;
+  font-size: small;
+  vertical-align: middle;
 }
 
 .headerDescription {
-    font-size: large;
+  font-size: large;
 }
 
 .headerDetailText {
-    font-size: 14px;
-    margin: 1px;
+  font-size: 14px;
+  margin: 1px;
 }

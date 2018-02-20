@@ -76,6 +76,11 @@ function playlist(state = {}, action) {
         clientSpotifyApi: action.clientSpotifyApi,
       });
     }
+    case 'sendClientDatabaseStats': {
+      return Object.assign({}, state, {
+        databaseStats: action.databaseStats,
+      });
+    }
     case 'PLAYLIST_REQUEST': {
       return Object.assign({}, state, {
         fetchingPlaylist: true,
