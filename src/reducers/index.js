@@ -1,9 +1,6 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-// import userBox from './userBox';
-// import playlist from './playlist';
-
 function userBox(state = {}, action) {
   switch (action.type) {
     case 'LOGOUT': {

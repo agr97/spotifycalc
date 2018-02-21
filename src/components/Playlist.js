@@ -78,8 +78,6 @@ class PlaylistClass extends Component {
       default: errorText = null; break;
     }
 
-
-    // put fetching time here
     return (
       <div>
         <form onSubmit={this.submitUrl} className="playlistForm">

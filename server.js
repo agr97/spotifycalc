@@ -6,17 +6,16 @@ const serverHelpers = require('./serverHelpers');
 const { Pool } = require('pg');
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'build')));
+
 const server = app.listen(8080);
 const io = socketIo.listen(server);
 const SpotifyWebApi = require('spotify-web-api-node');
 
 const pool = new Pool(authentication.poolData);
 
-app.use(express.static(path.join(__dirname, 'build')));
-
 const API_REFRESH_TIME = 1000 * 60 * 59;
 const DATABASE_REFRESHTIME = 1000 * 60 * 10;
-
 
 // Sends a new generic API for the client every hour. Does not allow for
 // access of user data, only playlist fetching.

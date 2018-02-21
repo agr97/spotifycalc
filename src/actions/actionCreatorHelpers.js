@@ -8,7 +8,6 @@ export async function login(dispatch, getState) {
   let userData;
   try {
     userData = await userSpotifyApi.getMe();
-    console.log(userData.body);
     dispatch({ type: 'USERDATA_SUCCESS', userData: userData.body });
   } catch (err) {
     console.log(err);
@@ -19,7 +18,6 @@ export async function login(dispatch, getState) {
   dispatch({ type: 'USERPLAYLISTS_REQUEST' });
   try {
     const userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
-    console.log(userPlaylists.body);
     dispatch({ type: 'USERPLAYLISTS_SUCCESS', userPlaylists: userPlaylists.body });
     dispatch({ type: 'server/getUserData', userData: userData.body, userPlaylistsTotal: userPlaylists.body.total });
   } catch (err) {

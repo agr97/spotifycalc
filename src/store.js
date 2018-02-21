@@ -38,7 +38,7 @@ export const store = createStore(
   defaultState,
   compose(
     applyMiddleware(routerMiddleware(history), socketIoMiddleware, thunk),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
+    // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), Uncomment for development
   ),
 );
 
