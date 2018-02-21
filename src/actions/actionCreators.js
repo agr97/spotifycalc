@@ -1,20 +1,7 @@
-// INITIALIZE
-// LOGIN_REQUEST
-// LOGIN_FAILURE
-// LOGIN_SUCCESS
-// USERDATA_REQUEST
-// USERDATA_FAILURE
-// USERDATA_SUCCESS
-// USERPLAYLISTS_REQUEST
-// USERPLAYLISTS_FAILURE
-// USERPLAYLISTS_SUCCESS
-// PLAYLIST_REQUEST
-// PLAYLIST_FAILURE
-// PLAYLIST_SUCCESS
+import SpotifyWebApi from 'spotify-web-api-node';
 import queryString from 'query-string';
 import url from 'url';
 import { store } from '../store';
-import SpotifyWebApi from 'spotify-web-api-node';
 import { login, parseSpotifySongs, parseAudioFeatures } from './actionCreatorHelpers';
 
 export function INITIALIZE(callbackUrl) {
@@ -135,7 +122,6 @@ export function GETPLAYLIST(userID, playlistID) {
 
         const t1 = window.performance.now();
         fetchingTime = (t1 - t0).toFixed(0);
-        console.log(`Fetching Playlist Took ${fetchingTime} milliseconds.`);
 
         dispatch({
           type: 'PLAYLIST_SUCCESS',

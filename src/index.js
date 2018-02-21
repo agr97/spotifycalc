@@ -14,12 +14,17 @@ const router = (
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <div>
-      <Route path="*" component={App} />
-      <Switch>        
-        <Redirect from="/callback" render={
+        <Route path="*" component={App} />
+        <Switch>
+          <Redirect
+            from="/callback"
+            render={
           store.dispatch(INITIALIZE(window.location.href))
-        } push to="/user"/>
-      </Switch>
+        }
+            push
+            to="/user"
+          />
+        </Switch>
       </div>
     </ConnectedRouter>
   </Provider>

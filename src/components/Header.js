@@ -6,7 +6,6 @@ import ReactCountdownClock from 'react-countdown-clock';
 import blankUser from '../blankuser.png';
 import loginbutton from '../loginbutton.png';
 import logoutbutton from '../logoutbutton.png';
-
 import '../styles/Header.css';
 
 class HeaderClass extends Component {
@@ -37,7 +36,6 @@ class HeaderClass extends Component {
 
   // center circular progess
   LoginBox() {
-
     if (this.props.isLoggedIn && this.props.fetchingUserData) {
       return (
         <div>
@@ -56,8 +54,8 @@ class HeaderClass extends Component {
       const { userData } = this.props;
       const profilePicture = userData.images[0] ? userData.images[0].url : blankUser;
       const displayName = userData.display_name || userData.id;
-      let country = userData.country;
-      let followers = userData.followers.total;
+      const country = userData.country;
+      const followers = userData.followers.total;
       const accountType = (['open', 'free'].indexOf(userData.product) >= 0)
         ? 'Free'
         : 'Premium';

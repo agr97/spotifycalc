@@ -6,7 +6,7 @@ import '../styles/Stats.css';
 class StatsClass extends Component {
   constructor(props) {
     super(props);
-  
+
     this.statsMain = this.statsMain.bind(this);
   }
 
@@ -17,13 +17,13 @@ class StatsClass extends Component {
           Waiting for Stats from Server
           <CircularProgress style={{ marginTop: '10px' }} />
         </div>
-      )
+      );
     }
 
     if (this.props.databaseStats.averagePlaylist === null || this.props.databaseStats.averageUsers === null) {
       return (
         <div className="statsLoading">Error retrieving Stats from server. Try Refreshing the Page.</div>
-      )
+      );
     }
 
     const { averagePlaylists, averageUsers } = this.props.databaseStats;
@@ -134,7 +134,7 @@ class StatsClass extends Component {
         </div>
 
       </div>
-    )
+    );
   }
 
   render() {
