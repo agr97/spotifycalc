@@ -16,7 +16,8 @@ class HeaderClass extends Component {
     const generateRandomString = N => (Math.random().toString(36) + Array(N).join('0')).slice(2, N + 2);
     const spotifyApi = new SpotifyWebApi({
       clientId: '4cc10ec7899f45838fb6ee2fbad9f568',
-      redirectUri: 'http://localhost:3000/callback',
+      //redirectUri: 'http://localhost:3000/callback', // Used for Development
+      redirectUri: 'https://playlistcalcify.tk/callback', // Production Uri
     });
     const loginState = generateRandomString(16);
     const loginUrl = spotifyApi.createAuthorizeURL(scopes, loginState);
@@ -36,6 +37,20 @@ class HeaderClass extends Component {
 
   // center circular progess
   LoginBox() {
+    if (this.props.loginFailure) {
+      return (
+        <div>
+          <div className="headerTopbar">
+            <div className="headerTitle">Playlist Calculator</div>
+            <a href={this.state.loginUrl}><img src={loginbutton} className="headerButton" /></a>
+          </div>
+          <div className="headerBottombarLogout">
+            <div className="headerDescription">Login Failed</div>
+          </div>
+        </div>
+      );
+    }
+
     if (this.props.isLoggedIn && this.props.fetchingUserData) {
       return (
         <div>
@@ -112,6 +127,7 @@ const mapStateToProps = state => ({
   userData: state.userBox.userData,
   fetchingUserData: state.userBox.fetchingUserData,
   isLoggedIn: state.userBox.isLoggedIn,
+  loginFailure: state.userBox.loginFailure,
 });
 
 const mapDispatchToProps = dispatch => ({
