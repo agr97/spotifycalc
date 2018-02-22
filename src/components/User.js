@@ -18,7 +18,6 @@ class UserClass extends Component {
   }
 
   onClickPlaylist(playlist) {
-    console.log(playlist);
     store.dispatch(GETPLAYLIST(playlist.owner.id, playlist.id));
     this.props.history.push('/');
   }

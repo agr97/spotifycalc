@@ -20,6 +20,7 @@ function userBox(state = {}, action) {
       return Object.assign({}, state, {
         isLoggedIn: false,
         fetchingUserApi: false,
+        loginFailure: true,
       });
     }
     case 'LOGIN_SUCCESS': {

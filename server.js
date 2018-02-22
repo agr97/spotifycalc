@@ -63,8 +63,10 @@ function onConnect(socket) {
           const data = await userSpotifyApi.authorizationCodeGrant(action.userCode);
           userSpotifyApi.setAccessToken(data.body.access_token);
           userSpotifyApi.setRefreshToken(data.body.refresh_token);
+          console.log(`User ${socket.id} login success`);
           socket.emit('action', { type: 'LOGIN_SUCCESS', userSpotifyApi });
         } catch (err) {
+          console.log(`User ${socket.id} login failure`);
           socket.emit('action', { type: 'LOGIN_FAILURE' });
         }
       })();
