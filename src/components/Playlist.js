@@ -44,7 +44,6 @@ class PlaylistClass extends Component {
       const playlistData = urlRegexp.exec(pathname);
       this.setState({ errorText: '', validUrl: true });
       this.setState({ textbarUsername: playlistData[2], textbarID: playlistData[4] });
-      console.log(`${playlistData[2]} , ${playlistData[4]}`);
     } else {
       this.setState({ errorText: 'Invalid Playlist Url', validUrl: false });
     }
@@ -133,7 +132,7 @@ class PlaylistClass extends Component {
           <div>Total Length: {getTime(spotifySongStats.spotifyTotalDuration)}</div>
           <div>Avg Song Length: {getTime(spotifySongStats.spotifyAverageDuration)}</div>
           <div>Avg Artists Per Song: {spotifySongStats.spotifyAverageArtists.toFixed(2)}</div>
-          <div>{spotifySongStats.spotifyTotalExplicit} Explicit Songs or {spotifySongStats.spotifyAverageExplicit * 100}% of Spotify Songs</div>
+          <div>{spotifySongStats.spotifyTotalExplicit} Explicit Songs or {(spotifySongStats.spotifyAverageExplicit * 100).toFixed(2)}% of Spotify Songs</div>
           <div>Downloading at Normal Quality: {(spotifySongStats.totalDuration / 1000 * 12 / 1024).toFixed(2)} MB</div>
           <div>Downloading at High Quality: {(spotifySongStats.totalDuration / 1000 * 20 / 1024).toFixed(2)} MB</div>
           <div>Downloading at Extreme Quality: {(spotifySongStats.totalDuration / 1000 * 40 / 1024).toFixed(2)} MB</div>
@@ -228,7 +227,7 @@ class PlaylistClass extends Component {
     }
 
     return (
-      <div>
+      <div className="playlistSongs">
         {playlistStats}
         <Divider style={{ margin: '4px 0px 4px' }} />
         {playlistAudioFeatures}
@@ -256,13 +255,15 @@ class PlaylistClass extends Component {
         <div className="playlistHeader">
           <img src={playlistImage} className="playlistImage" alt="Album Art" />
           <div className="playlistHeaderText">
-            <div className="playlistHeaderTextItem">{playlistPublic}</div>
-            <div className="playlistHeaderTextItem">{playlistCollaborative}</div>
-            <div className="playlistHeaderTextItem">Followers: {playlistBaseData.followers.total}</div>
-            <a className="playlistHeaderTextItem" target="_blank" href={playlistBaseData.external_urls.spotify}>
-              Link To Playlist On <img className="spotifyIcon" src={spotifyIcon} alt="Spotify Icon" />
-            </a>
-            <div className="playlistHeaderTextItem">{fetchingTime}</div>
+            <div>{playlistPublic}</div>
+            <div>{playlistCollaborative}</div>
+            <div>Followers: {playlistBaseData.followers.total}</div>
+            <div>
+              <a target="_blank" href={playlistBaseData.external_urls.spotify}>
+                Link To Playlist On <img className="spotifyIcon" src={spotifyIcon} alt="Spotify Icon" />
+              </a>
+            </div>
+            <div>{fetchingTime}</div>
           </div>
         </div>
         <div className="playlistMain">
@@ -270,9 +271,7 @@ class PlaylistClass extends Component {
           <div className="playlistMainItem">Created By: {displayName}</div>
           <div className="playlistMainDescription">{textDescription}</div>
         </div>
-        <div className="playlistSongs">
-          {this.playlistStats()}
-        </div>
+        {this.playlistStats()}
         <div />
       </div>
     );

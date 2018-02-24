@@ -54,22 +54,22 @@ class App extends Component {
     return (
       <MuiThemeProvider muiTheme={getTheme()}>
         <Paper>
-          <div style={{}}>
-          <div className="header">
-            <Header className="userbox" />
-          </div>
-          <div className="tabs">
-            <Tabs
-              onChange={this.handleTabChange}
-              value={this.state.slideIndex}
-              tabItemContainerStyle={{ }}
-            >
-              <Tab label="Playlist" value={0} />
-              <Tab label="User" value={1} />
-              <Tab label="Stats" value={2} />
-              <Tab label="About" value={3} />
-            </Tabs>
-          </div>
+          <div>
+            <div className="header">
+              <Header className="userbox" />
+            </div>
+            <div className="tabs">
+              <Tabs
+                onChange={this.handleTabChange}
+                value={this.state.slideIndex}
+                tabItemContainerStyle={{ }}
+              >
+                <Tab label="Playlist" value={0} />
+                <Tab label="User" value={1} />
+                <Tab label="Stats" value={2} />
+                <Tab label="About" value={3} />
+              </Tabs>
+            </div>
           </div>
 
           <SwipeableRoutes

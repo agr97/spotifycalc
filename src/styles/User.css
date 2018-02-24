@@ -1,7 +1,7 @@
-.playlist {
-    width: 100%;
-    height: auto;
-    margin-bottom: 20px;
+.user {
+  width: 100%;
+  height: auto;
+  margin: 5px 5px 20px;
 }
 
 .userCenteredItem {
@@ -10,21 +10,21 @@
 }
 
 .userPlaylistMain {
-    height: auto;
+  height: auto;
 }
 
 .userPlaylistImage {
-    display: inline-block;
-    max-width: 25%;
-    width: 200px;
-    height: auto;
-    vertical-align: middle;
+  display: inline-block;
+  max-width: 25%;
+  width: 200px;
+  height: auto;
+  vertical-align: middle;
 }
 
 .userPlaylistTitle {
-    display: inline-block;
-    text-align: right;
-    width: 70%;
-    height: auto;
-    vertical-align: middle;
+  display: inline-block;
+  text-align: right;
+  width: 70%;
+  height: auto;
+  vertical-align: middle;
 }

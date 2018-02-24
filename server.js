@@ -1,32 +1,32 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const socketIo = require('socket.io');
-const authentication = require('./authentication');
 const serverHelpers = require('./serverHelpers');
 const { Pool } = require('pg');
+const SpotifyWebApi = require('spotify-web-api-node');
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
 
-const server = app.listen(8080);
+const server = app.listen(process.env.listenPort);
 const io = socketIo.listen(server);
-const SpotifyWebApi = require('spotify-web-api-node');
 
-const pool = new Pool(authentication.poolData);
+const pool = new Pool(serverHelpers.poolData);
 
 const API_REFRESH_TIME = 1000 * 60 * 59;
 const DATABASE_REFRESHTIME = 1000 * 60 * 10;
 
 // Sends a new generic API for the client every hour. Does not allow for
 // access of user data, only playlist fetching.
-const clientSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
+const clientSpotifyApi = new SpotifyWebApi(serverHelpers.spotifyCredentials);
 (async () => {
-  await authentication.spotifyRefreshToken(clientSpotifyApi);
+  await serverHelpers.spotifyRefreshToken(clientSpotifyApi);
   console.log(`clientSpotifyApi loaded  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
 })();
 setInterval(() => {
   (async () => {
-    await authentication.spotifyRefreshToken(clientSpotifyApi);
+    await serverHelpers.spotifyRefreshToken(clientSpotifyApi);
     console.log(`clientSpotifyApi refreshed  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
     io.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
   })();
@@ -58,15 +58,13 @@ function onConnect(socket) {
     if (action.type === 'server/userLogin') {
       (async () => {
         socket.emit('action', { type: 'LOGIN_REQUEST' });
-        const userSpotifyApi = new SpotifyWebApi(authentication.spotifyCredentials);
+        const userSpotifyApi = new SpotifyWebApi(serverHelpers.spotifyCredentials);
         try {
           const data = await userSpotifyApi.authorizationCodeGrant(action.userCode);
           userSpotifyApi.setAccessToken(data.body.access_token);
           userSpotifyApi.setRefreshToken(data.body.refresh_token);
-          console.log(`User ${socket.id} login success`);
           socket.emit('action', { type: 'LOGIN_SUCCESS', userSpotifyApi });
         } catch (err) {
-          console.log(`User ${socket.id} login failure`);
           socket.emit('action', { type: 'LOGIN_FAILURE' });
         }
       })();

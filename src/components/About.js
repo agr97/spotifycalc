@@ -26,14 +26,16 @@ class About extends Component {
   render() {
     return (
       <div className="about">
-        <div className="aboutContent">
+        <div className="aboutLegal">
           <div>By using this application, you automatically agree to the following, in addition to all applicable laws and regulations</div>
           <div>1-The Terms and Conditions listed in the Spotify Developer Terms of Use, located
             <a href="https://developer.spotify.com/developer-terms-of-use/">Here</a>
           </div>
           <div>2-The Terms and Conditions of Playlist Calcify</div>
           <div>3-The Privacy Policy of Playlist Calcify</div>
-          <RaisedButton className="aboutEULAButton" label="EULA and Privacy Policy" onClick={this.handleOpen} />
+          <div className="aboutEULAButton">
+            <RaisedButton label="EULA and Privacy Policy" onClick={this.handleOpen} />
+          </div>
           <Dialog
             title="End User License Agreement and Privacy Policy"
             modal={false}
@@ -102,23 +104,23 @@ class About extends Component {
           </Dialog>
         </div>
         <Divider style={{ margin: '4px 0px 4px' }} />
-        <div>
-          <div>The following information about these statistics are taken from the Spotify Developer Api located 
+        <div className="aboutDescribeFeatures">
+          <div>The following information about these statistics are taken from the Spotify Developer Api located
             <a href="https://developer.spotify.com/web-api/get-audio-features/">Here</a>
           </div>
           <Divider style={{ margin: '4px 0px 4px' }} />
-          <div className="aboutDescribeFeature">Acousticness: A confidence measuer of wheter or not the track is acoustic. The higher the percentage, the higher the confidencer that the track is acoustic.</div>
-          <div className="aboutDescribeFeature">Danceability: Describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. Higher values are more danceable.</div>
-          <div className="aboutDescribeFeature">Energy: Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.</div>
-          <div className="aboutDescribeFeature">Instrumentalness: Predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly "vocal". The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 50% are intended to represent instrumental tracks, but confidence is higher as the value is higher.</div>
-          <div className="aboutDescribeFeature">Average Key: The musical Key of the playlist</div>
-          <div className="aboutDescribeFeature">Liveness: Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 80% provides strong likelihood that the playlist is mostly live.</div>
-          <div className="aboutDescribeFeature">Loudness: The overall loudness of a playlist in decibels (dB). Loudness values are averaged across the entire playlist and are useful for comparing relative loudness of playlists. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.</div>
-          <div className="aboutDescribeFeature">Average Modality:	Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 100% and minor is 0%.</div>
-          <div className="aboutDescribeFeature">Speechiness: Speechiness detects the presence of spoken words in a playlist. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 100% the attribute value. Values above 66% describe playlists that are probably made entirely of spoken words. Values between 33% and 66% describe playlists that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 33% most likely represent music and other non-speech-like playlists.</div>
-          <div className="aboutDescribeFeature">Tempo: The overall estimated tempo of a playlist in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.</div>
-          <div className="aboutDescribeFeature">Time Signature: An estimated overall time signature of a playlist. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).</div>
-          <div className="aboutDescribeFeature">Valence: A measure describing the musical positiveness conveyed by a track. Playlists with high valence sound more positive (e.g. happy, cheerful, euphoric), while playlists with low valence sound more negative (e.g. sad, depressed, angry).</div>
+          <div>Acousticness: A confidence measuer of wheter or not the track is acoustic. The higher the percentage, the higher the confidencer that the track is acoustic.</div>
+          <div>Danceability: Describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. Higher values are more danceable.</div>
+          <div>Energy: Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.</div>
+          <div>Instrumentalness: Predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly "vocal". The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 50% are intended to represent instrumental tracks, but confidence is higher as the value is higher.</div>
+          <div>Average Key: The musical Key of the playlist.</div>
+          <div>Liveness: Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 80% provides strong likelihood that the playlist is mostly live.</div>
+          <div>Loudness: The overall loudness of a playlist in decibels (dB). Loudness values are averaged across the entire playlist and are useful for comparing relative loudness of playlists. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.</div>
+          <div>Average Modality:	Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 100% and minor is 0%.</div>
+          <div>Speechiness: Speechiness detects the presence of spoken words in a playlist. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 100% the attribute value. Values above 66% describe playlists that are probably made entirely of spoken words. Values between 33% and 66% describe playlists that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 33% most likely represent music and other non-speech-like playlists.</div>
+          <div>Tempo: The overall estimated tempo of a playlist in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.</div>
+          <div>Time Signature: An estimated overall time signature of a playlist. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure).</div>
+          <div>Valence: A measure describing the musical positiveness conveyed by a track. Playlists with high valence sound more positive (e.g. happy, cheerful, euphoric), while playlists with low valence sound more negative (e.g. sad, depressed, angry).</div>
         </div>
       </div>
 

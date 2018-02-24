@@ -1,0 +1,74 @@
+{
+  "playlistBaseData": {
+    "collaborative": false,
+    "description": "The world couldn't get enough of these songs in 2017.",
+    "external_urls": {
+      "spotify": "https://open.spotify.com/user/spotify/playlist/37i9dQZF1DX5nwnRMcdReF"
+    },
+    "followers": {
+      "href": null,
+      "total": 267480
+    },
+    "id": "37i9dQZF1DX5nwnRMcdReF",
+    "images": [
+      {
+        "height": 300,
+        "url": "https://i.scdn.co/image/e50fd17b596a06a7f53eac397d647bf56fca2111",
+        "width": 300
+      }
+    ],
+    "name": "Top Tracks of 2017",
+    "owner": {
+      "display_name": "Spotify",
+      "external_urls": {
+        "spotify": "https://open.spotify.com/user/spotify"
+      },
+      "href": "https://api.spotify.com/v1/users/spotify",
+      "id": "spotify",
+      "type": "user",
+      "uri": "spotify:user:spotify"
+    },
+    "public": false,
+    "snapshot_id": "GInBjewJqOQ8qIHW8uf4QC0HpWc1jmAQTDwKyG3r0pssNcSoztEBey+qoknaNl4BJ6POf6SvBuM=",
+    "tracks": {
+      "total": 100
+    },
+    "type": "playlist"
+  },
+  "spotifyAudioFeaturesAverage": {
+    "danceability": 0.6968,
+    "energy": 0.6607,
+    "key": 5.57,
+    "loudness": -5.6526,
+    "mode": 0.58,
+    "speechiness": 0.104,
+    "acousticness": 0.1663,
+    "instrumentalness": 0.0048,
+    "liveness": 0.1506,
+    "valence": 0.517,
+    "tempo": 119.2025,
+    "duration_ms": 218387.28,
+    "time_signature": 3.99
+  },
+  "spotifySongStats": {
+    "totalSongs": 100,
+    "totalDuration": 21838686,
+    "totalAverageDuration": 218386.86,
+    "totalErrorsongs": 0,
+    "localTotalSongs": 0,
+    "localTotalDuration": 0,
+    "localTotalArtists": 0,
+    "localAverageDuration": 0,
+    "localAverageArtists": 0,
+    "spotifyTotalSongs": 100,
+    "spotifyTotalDuration": 21838686,
+    "spotifyTotalArtists": 175,
+    "spotifyTotalExplicit": 29,
+    "spotifyTotalPopularity": 8173,
+    "spotifyAverageDuration": 218386.86,
+    "spotifyAverageArtists": 1.75,
+    "spotifyAverageExplicit": 0.29,
+    "spotifyAveragePopularity": 81.73
+  },
+  "fetchingTime": "0"
+}

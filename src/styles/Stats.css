@@ -11,17 +11,11 @@
   margin: 5px;
 }
 
-.statsMainTop {
-  margin: 5px;
-  vertical-align: middle;
-}
-
-.statsMainBottom {
-  margin: 5px;
-  vertical-align: middle;
-}
-
 .statsPlaylistType {
   margin: 5px;
   display: inline-block;
+}
+
+.statsPlaylistType div {
+  margin: 3px 0px 3px;
 }
