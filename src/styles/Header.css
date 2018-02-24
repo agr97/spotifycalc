@@ -20,22 +20,9 @@
   height: 40px;
 }
 
-.headerLoading {
-  height: 70px;
-  vertical-align: center;
-  text-align: right;
-}
-
-
-.headerBottombarLogout {
+.headerBottombar {
   height: 70px;
   text-align: center;
-}
-
-.headerBottombarLogin {
-  height: 70px;
-  text-align: right;
-  margin-right: 10px;
 }
 
 .headerBottomBarTimerText {
@@ -65,7 +52,7 @@
   display: inline-block;
   vertical-align: middle;
 }
-.headerAccountdetailsitems {
+.headerAccountdetails div {
   margin: 1px;
   font-size: small;
   vertical-align: middle;

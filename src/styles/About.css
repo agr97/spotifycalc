@@ -2,16 +2,17 @@
   width: 100%;
   height: auto;
   margin-bottom: 20px;
+  margin: 5px;
 }
 
-.aboutContent {
-	margin: 5px;
+.aboutLegal {
+	margin: 5px 0px 5px;
 }
 
 .aboutEULAButton {
 	text-align: center;
 }
 
-.aboutDescribeFeature {
-	margin: 5px 0px 0px;
+.aboutDescribeFeatures div {
+	margin: 5px 0px 5px;
 }

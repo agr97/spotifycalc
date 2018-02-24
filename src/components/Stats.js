@@ -71,13 +71,13 @@ class StatsClass extends Component {
       <div>
         <div className="statsMainTop">These statistics only pertain to playlists that have been loaded and users that have logged in through the application. Statistics are updated every 10 minutes.</div>
         <Divider style={{ margin: '4px 0px 4px' }} />
-        <div className="statsMainTop">
+        <div className="statsPlaylistType">
           <div>Avg Followers Per User: {averageUsers.averageFollowers.toFixed(0)}</div>
           <div>Percentage of Premium Users: {averageUsers.averagePremium.toFixed(2) * 100}%</div>
           <div>Avg Playlists Per User: {averageUsers.averagePlaylists.toFixed(0)}</div>
         </div>
         <Divider style={{ margin: '4px 0px 4px' }} />
-        <div className="statsMainBottom">
+        <div className="statsPlaylistType">
           <div>Avg Playlist Name Length: {averagePlaylists.averageNameLength.toFixed(0)} Characters</div>
           <div>Avg Description Length: {averagePlaylists.averageDescriptionLength.toFixed(0)} Characters</div>
           <div>Avg Followers Per Playlist: {averagePlaylists.averageFollowers.toFixed(0)} </div>

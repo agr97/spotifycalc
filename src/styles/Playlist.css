@@ -15,51 +15,60 @@
 }
 
 .playlistLoading {
-    margin-top: 5px;
-    vertical-align: middle;
-    text-align: center;
+  margin-top: 5px;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .playlistHeader {
-    text-align: center;
+  text-align: center;
+  margin: 10px 0px 10px;
 }
 
 .playlistHeaderText {
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
+  display: inline-block;
+  text-align: center;
+	vertical-align: middle;
+	margin-left: 5px;
+} 
+
+.playlistHeaderText div {
+	margin: 2px;
+  vertical-align: middle;
 }
 
-.playlistHeaderTextItem {
-    margin: 2px;
-    vertical-align: middle;
-}
 
 .playlistImage {
-    max-width: 35%;
-    height: auto;
-    max-height: 200px;
-    display: inline-block;
-    vertical-align: middle;
+  max-width: 35%;
+  height: auto;
+  max-height: 200px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 
 .playlistMainItem {
-    text-align: center;
+  text-align: center;
 }
 
 .playlistMainTitle {
-    text-align: center;
-    font-weight: bold;
+  text-align: center;
+	font-weight: bold;
+	font-size: larger;
 }
 
 .playlistMainDescription {
-    text-align: center;
-    font-weight: lighter;
+  text-align: center;
+	font-weight: lighter;
+	margin-bottom: 5px;
 }
 
 .spotifyIcon {
-    width: 21px;
-    margin: 12px;
-    vertical-align: middle;
+  width: 21px;
+  margin: 12px;
+  vertical-align: middle;
+}
+
+.playlistSongs div {
+	margin-bottom: 5px;
 }

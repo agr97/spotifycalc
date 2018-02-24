@@ -1,3 +1,27 @@
+const spotifyCredentials = {
+  clientId: process.env.clientId,
+  clientSecret: process.env.clientSecret,
+  redirectUri: process.env.redirectUri,
+};
+
+const poolData = {
+  user: process.env.dbUser,
+  host: process.env.dbHost,
+  database: process.env.dbDatabase,
+  password: process.env.dbPassword,
+  port: process.env.dbPort,
+};
+
+async function spotifyRefreshToken(spotifyApi) {
+  try {
+    const data = await spotifyApi.clientCredentialsGrant();
+    spotifyApi.setAccessToken(data.body.access_token);
+    // Save the access token so that it's used in future calls
+  } catch (err) {
+    console.log('Something went wrong when retrieving an access token', err);
+  }
+}
+
 function parseUserPlaylist(playlistdata) {
   const { playlistBaseData, spotifyAudioFeaturesAverage, spotifySongStats } = playlistdata;
   const values = [];
@@ -149,3 +173,6 @@ async function getDatabaseStats(pool) {
 module.exports.parseUserPlaylist = parseUserPlaylist;
 module.exports.parseUserUser = parseUserUser;
 module.exports.getDatabaseStats = getDatabaseStats;
+module.exports.poolData = poolData;
+module.exports.spotifyCredentials = spotifyCredentials;
+module.exports.spotifyRefreshToken = spotifyRefreshToken;

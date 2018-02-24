@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { createStore, compose, applyMiddleware } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
-import defaultPlaylist from './globaltop50.json';
+import defaultPlaylist from './defaultPlaylist.json';
 
 import rootReducer from './reducers/index';
 
@@ -34,12 +34,12 @@ const defaultState = {
   },
 };
 
+/* eslint-disable */
+const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
+/* eslint-enable */
+
 export const store = createStore(
   rootReducer,
   defaultState,
-  compose(
-    applyMiddleware(routerMiddleware(history), socketIoMiddleware, thunk),
-    //window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(), // Comment for production
-  ),
+  composeEnhancers(applyMiddleware(routerMiddleware(history), socketIoMiddleware, thunk)),
 );
-
