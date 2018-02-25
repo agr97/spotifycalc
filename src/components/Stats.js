@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { CircularProgress, Divider } from 'material-ui';
+import { getTime, keys } from './componentHelpers';
 import '../styles/Stats.css';
 
 class StatsClass extends Component {
@@ -21,15 +22,6 @@ class StatsClass extends Component {
     }
 
     const { averagePlaylists, averageUsers } = this.props.databaseStats;
-    function getTime(milliseconds) {
-      let seconds = Math.floor(milliseconds / 1000);
-      let minutes = Math.floor(seconds / 60);
-      seconds %= 60;
-      const hours = Math.floor(minutes / 60);
-      minutes %= 60;
-
-      return `${hours} hrs ${minutes} min ${seconds} s`;
-    }
 
     const acousticness = `Acousticness: ${(averagePlaylists.averageAudioFeatures[6] * 100).toFixed(2)}%`;
     const danceability = `Danceability: ${(averagePlaylists.averageAudioFeatures[0] * 100).toFixed(2)}%`;
@@ -38,25 +30,8 @@ class StatsClass extends Component {
     const liveness = `Liveness: ${(averagePlaylists.averageAudioFeatures[8] * 100).toFixed(2)}%`;
     const mode = `Average Modality: ${(averagePlaylists.averageAudioFeatures[4] * 100).toFixed(2)}%`;
     const speechiness = `Speechiness: ${(averagePlaylists.averageAudioFeatures[5] * 100).toFixed(2)}%`;
-    const valence = `Valence: ${(averagePlaylists.averageAudioFeatures[9] * 100).toFixed(2)}%`;
-
-    let key;
-    switch (parseFloat(averagePlaylists.averageAudioFeatures[2]).toFixed(0)) {
-      case '0': key = 'Average Key: C'; break;
-      case '1': key = 'Average Key: C#'; break;
-      case '2': key = 'Average Key: D'; break;
-      case '3': key = 'Average Key: D#'; break;
-      case '4': key = 'Average Key: E'; break;
-      case '5': key = 'Average Key: F'; break;
-      case '6': key = 'Average Key: F#'; break;
-      case '7': key = 'Average Key: G'; break;
-      case '8': key = 'Average Key: G#'; break;
-      case '9': key = 'Average Key: A'; break;
-      case '10': key = 'Average Key: A#'; break;
-      case '11': key = 'Average Key: B'; break;
-      default: key = 'Average Key: Unknown'; break;
-    }
-
+    const valence = `Valence: ${(averagePlaylists.averageAudioFeatures[9] * 100).toFixed(2)}%`
+    const key = keys[parseFloat(averagePlaylists.averageAudioFeatures[2].toFixed(0))] || 'Average Key: Unknown';
     const loudness = `Loudness: ${(averagePlaylists.averageAudioFeatures[3]).toFixed(2)} dB`;
     const tempo = `Tempo: ${(averagePlaylists.averageAudioFeatures[10]).toFixed(2)} BPM`;
     const timesignature = `Time Signature: ${(averagePlaylists.averageAudioFeatures[12]).toFixed(2)}`;

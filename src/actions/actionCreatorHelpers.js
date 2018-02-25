@@ -1,5 +1,3 @@
-import SpotifyWebApi from 'spotify-web-api-node';
-
 export function parseSpotifySongs(tracksArray) {
   const localSongs = [];
   const spotifySongs = [];
