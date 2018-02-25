@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { store } from '../store';
 import { CircularProgress } from 'material-ui';
 import SpotifyWebApi from 'spotify-web-api-node';
 import ReactCountdownClock from 'react-countdown-clock';
@@ -11,7 +12,6 @@ import '../styles/Header.css';
 class HeaderClass extends Component {
   constructor(props) {
     super(props);
-
 
     const spotifyApi = new SpotifyWebApi({
       clientId: process.env.REACT_APP_clientId,
@@ -30,7 +30,7 @@ class HeaderClass extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isLoggedIn) {
-      setTimeout(() => this.props.logout(), 3590000);
+      setTimeout(() => store.dispatch({ type: 'LOGOUT' }), 3590000);
     }
   }
 
@@ -50,12 +50,12 @@ class HeaderClass extends Component {
       );
     }
 
-    if (this.props.isLoggedIn && this.props.fetchingUserData) {
+    if (this.props.fetchingUserData) {
       return (
         <div>
           <div className="headerTopbar">
             <div className="headerTitle">Playlist Calcify</div>
-            <img src={logoutbutton} onClick={this.props.logout} className="headerButton" />
+            <img src={logoutbutton} onClick={() => store.dispatch({ type: 'LOGOUT' })} className="headerButton" />
           </div>
           <div className="headerBottombar" >
             <CircularProgress style={{ textAlign: 'right', marginRight: '40px', marginTop: '15px' }} />
@@ -64,7 +64,7 @@ class HeaderClass extends Component {
       );
     }
 
-    if (this.props.isLoggedIn && !this.props.fetchingUserData) {
+    if (this.props.isLoggedIn) {
       const { userData } = this.props;
       const profilePicture = userData.images[0] ? userData.images[0].url : blankUser;
       const displayName = userData.display_name || userData.id;
@@ -78,7 +78,7 @@ class HeaderClass extends Component {
         <div>
           <div className="headerTopbar">
             <div className="headerTitle">Playlist Calcify</div>
-            <img src={logoutbutton} onClick={this.props.logout} className="headerButton" />
+            <img src={logoutbutton} onClick={() => store.dispatch({ type: 'LOGOUT' })} className="headerButton" />
           </div>
           <div className="headerBottombar">
             <div className="headerBottomBarTimerText">Logout In</div>
@@ -129,15 +129,7 @@ const mapStateToProps = state => ({
   loginFailure: state.userBox.loginFailure,
 });
 
-const mapDispatchToProps = dispatch => ({
-  logout: () => dispatch({ type: 'LOGOUT' }),
-});
-
-
-const Header = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(HeaderClass);
+const Header = connect(mapStateToProps)(HeaderClass);
 
 
 export default Header;

@@ -3,6 +3,27 @@ import { routerReducer } from 'react-router-redux';
 
 function userBox(state = {}, action) {
   switch (action.type) {
+    case 'LOGIN_REQUEST': {
+      return Object.assign({}, state, {
+        fetchingUserData: true,
+      });
+    }
+    case 'LOGIN_SUCCESS': {
+      return Object.assign({}, state, {
+        isLoggedIn: true,
+        fetchingUserData: false,
+        userSpotifyApi: action.userSpotifyApi,
+        userData: action.userData,
+        userPlaylists: action.userPlaylists,
+      });
+    }
+    case 'LOGIN_FAILURE': {
+      return Object.assign({}, state, {
+        isLoggedIn: false,
+        fetchingUserData: false,
+        loginFailure: true,
+      });
+    }
     case 'LOGOUT': {
       return Object.assign({}, state, {
         isLoggedIn: false,
@@ -11,25 +32,8 @@ function userBox(state = {}, action) {
         userPlaylists: '',
       });
     }
-    case 'LOGIN_REQUEST': {
-      return Object.assign({}, state, {
-        fetchingUserApi: true,
-      });
-    }
-    case 'LOGIN_FAILURE': {
-      return Object.assign({}, state, {
-        isLoggedIn: false,
-        fetchingUserApi: false,
-        loginFailure: true,
-      });
-    }
-    case 'LOGIN_SUCCESS': {
-      return Object.assign({}, state, {
-        userSpotifyApi: action.userSpotifyApi,
-        isLoggedIn: true,
-        fetchingUserApi: false,
-      });
-    }
+
+
     case 'USERDATA_REQUEST': {
       return Object.assign({}, state, {
         fetchingUserData: true,
@@ -60,6 +64,7 @@ function userBox(state = {}, action) {
       return Object.assign({}, state, {
         userPlaylists: action.userPlaylists,
         fetchingUserPlaylists: false,
+        initiateLogin: false,
       });
     }
     default:
@@ -69,12 +74,12 @@ function userBox(state = {}, action) {
 
 function playlist(state = {}, action) {
   switch (action.type) {
-    case 'sendClientSpotifyApi': {
+    case 'SENDCLIENTSPOTIFYAPI': {
       return Object.assign({}, state, {
         clientSpotifyApi: action.clientSpotifyApi,
       });
     }
-    case 'sendClientDatabaseStats': {
+    case 'SENDCLIENTDATABASESTATS': {
       return Object.assign({}, state, {
         databaseStats: action.databaseStats,
       });
