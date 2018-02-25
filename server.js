@@ -5,6 +5,10 @@ const socketIo = require('socket.io');
 const serverHelpers = require('./serverHelpers');
 const { Pool } = require('pg');
 const SpotifyWebApi = require('spotify-web-api-node');
+const bunyan = require('bunyan');
+const SQL = require('sql-template-strings');
+
+const log = bunyan.createLogger({ name: 'pcalcserver' });
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
@@ -21,28 +25,39 @@ const DATABASE_REFRESHTIME = 1000 * 60 * 10;
 // access of user data, only playlist fetching.
 const clientSpotifyApi = new SpotifyWebApi(serverHelpers.spotifyCredentials);
 (async () => {
-  await serverHelpers.spotifyRefreshToken(clientSpotifyApi);
-  console.log(`clientSpotifyApi loaded  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
+  await serverHelpers.spotifyRefreshToken(clientSpotifyApi, log);
+  log.info(`clientSpotifyApi loaded  ${JSON.stringify(clientSpotifyApi._credentials.accessToken.substring(0, 15))}`);
 })();
-setInterval(() => {
-  (async () => {
-    await serverHelpers.spotifyRefreshToken(clientSpotifyApi);
-    console.log(`clientSpotifyApi refreshed  ${JSON.stringify(clientSpotifyApi._credentials.accessToken)}`);
-    io.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
-  })();
+setInterval(async () => {
+  await serverHelpers.spotifyRefreshToken(clientSpotifyApi, log);
+  log.info(`clientSpotifyApi refreshed  ${JSON.stringify(clientSpotifyApi._credentials.accessToken.substring(0, 15))}`);
+  io.emit('action', { type: 'SENDCLIENTSPOTIFYAPI', clientSpotifyApi });
 }, API_REFRESH_TIME);
+
 
 // Parses Data from the database to send to the user as statistics.
 // Resends the data every 10 minutes.
 let databaseStats;
 (async () => {
-  databaseStats = await serverHelpers.getDatabaseStats(pool);
+  try {
+    const playlists = await pool.query(SQL`SELECT * from playlists`);
+    const userData = await pool.query(SQL`SELECT * from users`);
+    databaseStats = serverHelpers.parseDatabaseStats(playlists, userData);
+  } catch (err) {
+    console.log(err);
+    log.warn('Failed to Connect to Postgres');
+    process.exit();
+  }
 })();
-setInterval(() => {
-  (async () => {
-    databaseStats = await serverHelpers.getDatabaseStats(pool);
-    io.emit('action', { type: 'sendClientDatabaseStats', databaseStats });
-  })();
+setInterval(async () => {
+  try {
+    const playlists = pool.query(SQL`SELECT * from playlists`);
+    const userData = pool.query(SQL`SELECT * from users`);
+    databaseStats = serverHelpers.parseDatabaseStats(playlists, userData);
+  } catch (err) {
+    log.warn(err);
+  }
+  io.emit('action', { type: 'SENDCLIENTDATABASESTATS', databaseStats });
 }, DATABASE_REFRESHTIME);
 
 
@@ -50,53 +65,64 @@ io.on('connection', onConnect);
 
 function onConnect(socket) {
   // Send the newly connected client the server's generic API and database stats.
-  socket.emit('action', { type: 'sendClientSpotifyApi', clientSpotifyApi });
-  socket.emit('action', { type: 'sendClientDatabaseStats', databaseStats });
-  console.log(`Sent initial data to client  ${socket.id}`);
+  socket.emit('action', { type: 'SENDCLIENTSPOTIFYAPI', clientSpotifyApi });
+  socket.emit('action', { type: 'SENDCLIENTDATABASESTATS', databaseStats });
+  log.info(`Sent initial data to client  ${socket.id}`);
 
-  socket.on('action', (action) => {
-    if (action.type === 'server/userLogin') {
-      (async () => {
-        socket.emit('action', { type: 'LOGIN_REQUEST' });
-        const userSpotifyApi = new SpotifyWebApi(serverHelpers.spotifyCredentials);
-        try {
-          const data = await userSpotifyApi.authorizationCodeGrant(action.userCode);
-          userSpotifyApi.setAccessToken(data.body.access_token);
-          userSpotifyApi.setRefreshToken(data.body.refresh_token);
-          socket.emit('action', { type: 'LOGIN_SUCCESS', userSpotifyApi });
-        } catch (err) {
-          socket.emit('action', { type: 'LOGIN_FAILURE' });
-        }
-      })();
+  socket.on('action', async (action) => {
+    if (action.type === 'SERVER/USERLOGIN') {
+      socket.emit('action', { type: 'LOGIN_REQUEST' });
+      const userSpotifyApi = new SpotifyWebApi(serverHelpers.spotifyCredentials);
+      try {
+        const data = await userSpotifyApi.authorizationCodeGrant(action.userCode);
+        userSpotifyApi.setAccessToken(data.body.access_token);
+
+        const userData = await userSpotifyApi.getMe();
+        const userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
+
+        socket.emit('action', {
+          type: 'LOGIN_SUCCESS',
+          userSpotifyApi,
+          userData: userData.body,
+          userPlaylists: userPlaylists.body,
+        });
+
+        // then add to database, separate function.
+      } catch (err) {
+        socket.emit('action', { type: 'LOGIN_FAILURE' });
+      }
     }
-    if (action.type === 'server/getPlaylist') {
-      (async () => {
-        try {
-          const values = serverHelpers.parseUserPlaylist(action.playlistData);
+    if (action.type === 'SERVER/GETPLAYLIST') {
+      try {
+        const values = serverHelpers.parseUserPlaylist(action.playlistData);
 
-          const querypart1 = 'INSERT INTO playlists VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT (id, owner) ';
-          const querypart2 = 'DO UPDATE SET name=$3, description=$4, followers=$5, public=$6, collaborative=$7, ';
-          const querypart3 = 'snapshot_id=$8, "songStats"=$9, "audioFeatures"=$10;';
-
-          await pool.query(querypart1 + querypart2 + querypart3, values);
-        } catch (err) {
-          console.log(err);
-        }
-      })();
+        await pool.query(SQL`
+          INSERT
+          INTO    playlists
+                  (id, owner, name, description, followers, public, collaborative, snapshot_id, songstats, audiofeatures)
+          VALUES  (${values[0]}, ${values[1]}, ${values[2]}, ${values[3]}, ${values[4]}, ${values[5]}, ${values[6]}, ${values[7]}, ${values[8]}, ${values[9]})
+          ON CONFLICT (id, owner)
+          DO UPDATE SET name=${values[2]}, description=${values[3]}, followers=${values[4]}, public=${values[5]}, collaborative=${values[6]}, snapshot_id=${values[7]}, songstats=${values[8]}, audiofeatures=${values[9]};
+        `);
+      } catch (err) {
+        log.warn(err);
+      }
     }
-    if (action.type === 'server/getUserData') {
-      (async () => {
-        try {
-          const values = serverHelpers.parseUserUser(action)
+    if (action.type === 'SERVER/getUserData') {
+      try {
+        const values = serverHelpers.parseUserUser(action);
 
-          const querypart1 = 'INSERT INTO users VALUES($1,$2,$3,$4) ON CONFLICT (id) ';
-          const querypart2 = 'DO UPDATE SET id=$1, followers=$2, product=$3, playlists=$4;';
-
-          await pool.query(querypart1 + querypart2, values);
-        } catch (err) {
-          console.log(err);
-        }
-      })();
+        await pool.query(SQL`
+          INSERT
+          INTO    users
+                  (id, followers, product, playlist)
+          VALUES  (${values[0]}, ${values[1]}, ${values[2]}, ${values[3]})
+          ON CONFLICT (id)
+          DO UPDATE SET id=${values[0]}, followers=${values[1]}, product=${values[2]}, playlist=${values[3]};
+        `);
+      } catch (err) {
+        log.warn(err);
+      }
     }
   });
 }

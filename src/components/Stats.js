@@ -11,18 +11,12 @@ class StatsClass extends Component {
   }
 
   statsMain() {
-    if (this.props.databaseStats === '') {
+    if (this.props.databaseStats === null) {
       return (
         <div className="statsLoading">
           Waiting for Stats from Server
           <CircularProgress style={{ marginTop: '10px' }} />
         </div>
-      );
-    }
-
-    if (this.props.databaseStats.averagePlaylist === null || this.props.databaseStats.averageUsers === null) {
-      return (
-        <div className="statsLoading">Error retrieving Stats from server. Try Refreshing the Page.</div>
       );
     }
 

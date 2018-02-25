@@ -30,6 +30,7 @@ class PlaylistClass extends Component {
   submitUrl(event) {
     event.preventDefault();
     store.dispatch(GETPLAYLIST(this.state.textbarUsername, this.state.textbarID));
+    this.setState({ textbarID: '', textbarUsername: '', validUrl: false });
   }
 
 
@@ -87,7 +88,7 @@ class PlaylistClass extends Component {
             value={this.state.playlistUrl}
             onChange={this.handleUrlChange}
             autoFocus
-            onFocus={() => this.setState({playlistUrl: ''})}
+            onFocus={() => this.setState({ playlistUrl: '' })}
           />
           <RaisedButton
             disabled={!this.state.validUrl}
@@ -187,23 +188,22 @@ class PlaylistClass extends Component {
       const speechiness = `Speechiness: ${(spotifyAudioFeaturesAverage.speechiness * 100).toFixed(2)}%`;
       const valence = `Valence: ${(spotifyAudioFeaturesAverage.valence * 100).toFixed(2)}%`;
 
-      let key;
-      switch (parseFloat(spotifyAudioFeaturesAverage.key).toFixed(0)) {
-        case '0': key = 'Average Key: C'; break;
-        case '1': key = 'Average Key: C#'; break;
-        case '2': key = 'Average Key: D'; break;
-        case '3': key = 'Average Key: D#'; break;
-        case '4': key = 'Average Key: E'; break;
-        case '5': key = 'Average Key: F'; break;
-        case '6': key = 'Average Key: F#'; break;
-        case '7': key = 'Average Key: G'; break;
-        case '8': key = 'Average Key: G#'; break;
-        case '9': key = 'Average Key: A'; break;
-        case '10': key = 'Average Key: A#'; break;
-        case '11': key = 'Average Key: B'; break;
-        default: key = 'Average Key: Unknown'; break;
-      }
+      const keys = [
+        'Average Key: C',
+        'Average Key: C#',
+        'Average Key: D',
+        'Average Key: D#',
+        'Average Key: E',
+        'Average Key: F',
+        'Average Key: F#',
+        'Average Key: G',
+        'Average Key: G#',
+        'Average Key: A',
+        'Average Key: A#',
+        'Average Key: B',
+      ]
 
+      const key = keys[parseFloat(spotifyAudioFeaturesAverage.key.toFixed(0))] || 'Average Key: Unknown' ;
       const loudness = `Loudness: ${(spotifyAudioFeaturesAverage.loudness).toFixed(2)} dB`;
       const tempo = `Tempo: ${(spotifyAudioFeaturesAverage.tempo).toFixed(2)} BPM`;
       const timesignature = `Time Signature: ${(spotifyAudioFeaturesAverage.time_signature).toFixed(2)}`;
@@ -290,10 +290,9 @@ class PlaylistClass extends Component {
 
 const mapStateToProps = state => ({
   error: state.playlist.error,
+  clientSpotifyApi: state.playlist.clientSpotifyApi,
   fetchingPlaylist: state.playlist.fetchingPlaylist,
   userSpotifyApi: state.userBox.userSpotifyApi,
-  clientSpotifyApi: state.playlist.clientSpotifyApi,
-  defaultPlaylist: state.playlist.defaultPlaylist,
   loadedPlaylist: state.playlist.loadedPlaylist,
 });
 

@@ -1,30 +1,5 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 
-export async function login(dispatch, getState) {
-  dispatch({ type: 'USERDATA_REQUEST' });
-  const { userSpotifyApi } = getState().userBox;
-  Object.setPrototypeOf(userSpotifyApi, SpotifyWebApi.prototype);
-
-  let userData;
-  try {
-    userData = await userSpotifyApi.getMe();
-    dispatch({ type: 'USERDATA_SUCCESS', userData: userData.body });
-  } catch (err) {
-    console.log(err);
-    dispatch({ type: 'USERDATA_FAILURE' });
-    return;
-  }
-
-  dispatch({ type: 'USERPLAYLISTS_REQUEST' });
-  try {
-    const userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
-    dispatch({ type: 'USERPLAYLISTS_SUCCESS', userPlaylists: userPlaylists.body });
-    dispatch({ type: 'server/getUserData', userData: userData.body, userPlaylistsTotal: userPlaylists.body.total });
-  } catch (err) {
-    dispatch({ type: 'USERPLAYLISTS_FAILURE' });
-  }
-}
-
 export function parseSpotifySongs(tracksArray) {
   const localSongs = [];
   const spotifySongs = [];

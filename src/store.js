@@ -9,18 +9,16 @@ import defaultPlaylist from './defaultPlaylist.json';
 import rootReducer from './reducers/index';
 
 const socket = socketIo.connect();
-const socketIoMiddleware = createSocketIoMiddleware(socket, 'server/');
+const socketIoMiddleware = createSocketIoMiddleware(socket, 'SERVER/');
 
 export const history = createHistory();
 
 const defaultState = {
   userBox: {
-    fetchingUserApi: false,
-    userSpotifyApi: '',
+    isLoggedIn: false,
     fetchingUserData: false,
-    isLoggedIn: '',
+    userSpotifyApi: '',
     userData: '',
-    fetchingUserPlaylists: false,
     userPlaylists: '',
     loginFailure: false,
   },
@@ -28,9 +26,8 @@ const defaultState = {
     error: '',
     clientSpotifyApi: '',
     fetchingPlaylist: false,
-    defaultPlaylist,
     loadedPlaylist: defaultPlaylist,
-    databaseStats: '',
+    databaseStats: null,
   },
 };
 
