@@ -1,8 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 import queryString from 'query-string';
 import url from 'url';
-import { store } from '../store';
-import { login, parseSpotifySongs, parseAudioFeatures } from './actionCreatorHelpers';
+import { parseSpotifySongs, parseAudioFeatures } from './actionCreatorHelpers';
 
 export function INITIALIZE(callbackUrl) {
   return async function initialize(dispatch, getState) {

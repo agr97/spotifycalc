@@ -4,6 +4,7 @@ import url from 'url';
 import { TextField, RaisedButton, CircularProgress, Divider } from 'material-ui';
 import { store } from '../store';
 import { GETPLAYLIST } from '../actions/actionCreators';
+import { getTime, keys } from './componentHelpers';
 import '../styles/Playlist.css';
 import blankalbumart from '../blankalbumart.png';
 import spotifyIcon from '../Spotify_Icon_RGB_Green.png';
@@ -105,16 +106,6 @@ class PlaylistClass extends Component {
   playlistStats() {
     const { spotifyAudioFeaturesAverage, spotifySongStats } = this.props.loadedPlaylist;
 
-    function getTime(milliseconds) {
-      let seconds = Math.floor(milliseconds / 1000);
-      let minutes = Math.floor(seconds / 60);
-      seconds %= 60;
-      const hours = Math.floor(minutes / 60);
-      minutes %= 60;
-
-      return `${hours} hrs ${minutes} min ${seconds} s`;
-    }
-
     let playlistStats;
     let playlistAudioFeatures;
 
@@ -187,23 +178,7 @@ class PlaylistClass extends Component {
       const mode = `Average Modality: ${(spotifyAudioFeaturesAverage.mode * 100).toFixed(2)}%`;
       const speechiness = `Speechiness: ${(spotifyAudioFeaturesAverage.speechiness * 100).toFixed(2)}%`;
       const valence = `Valence: ${(spotifyAudioFeaturesAverage.valence * 100).toFixed(2)}%`;
-
-      const keys = [
-        'Average Key: C',
-        'Average Key: C#',
-        'Average Key: D',
-        'Average Key: D#',
-        'Average Key: E',
-        'Average Key: F',
-        'Average Key: F#',
-        'Average Key: G',
-        'Average Key: G#',
-        'Average Key: A',
-        'Average Key: A#',
-        'Average Key: B',
-      ]
-
-      const key = keys[parseFloat(spotifyAudioFeaturesAverage.key.toFixed(0))] || 'Average Key: Unknown' ;
+      const key = keys[parseFloat(spotifyAudioFeaturesAverage.key.toFixed(0))] || 'Average Key: Unknown';
       const loudness = `Loudness: ${(spotifyAudioFeaturesAverage.loudness).toFixed(2)} dB`;
       const tempo = `Tempo: ${(spotifyAudioFeaturesAverage.tempo).toFixed(2)} BPM`;
       const timesignature = `Time Signature: ${(spotifyAudioFeaturesAverage.time_signature).toFixed(2)}`;

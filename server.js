@@ -44,15 +44,14 @@ let databaseStats;
     const userData = await pool.query(SQL`SELECT * from users`);
     databaseStats = serverHelpers.parseDatabaseStats(playlists, userData);
   } catch (err) {
-    console.log(err);
     log.warn('Failed to Connect to Postgres');
     process.exit();
   }
 })();
 setInterval(async () => {
   try {
-    const playlists = pool.query(SQL`SELECT * from playlists`);
-    const userData = pool.query(SQL`SELECT * from users`);
+    const playlists = await pool.query(SQL`SELECT * from playlists`);
+    const userData = await pool.query(SQL`SELECT * from users`);
     databaseStats = serverHelpers.parseDatabaseStats(playlists, userData);
   } catch (err) {
     log.warn(err);
@@ -73,23 +72,50 @@ function onConnect(socket) {
     if (action.type === 'SERVER/USERLOGIN') {
       socket.emit('action', { type: 'LOGIN_REQUEST' });
       const userSpotifyApi = new SpotifyWebApi(serverHelpers.spotifyCredentials);
+      let userData;
+      let userPlaylists;
+      let uploadToDatabase = false;
+
+      // Send User Data to User
       try {
-        const data = await userSpotifyApi.authorizationCodeGrant(action.userCode);
-        userSpotifyApi.setAccessToken(data.body.access_token);
+        const authCode = await userSpotifyApi.authorizationCodeGrant(action.userCode);
+        userSpotifyApi.setAccessToken(authCode.body.access_token);
 
-        const userData = await userSpotifyApi.getMe();
-        const userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
+        userData = await userSpotifyApi.getMe();
+        userPlaylists = await userSpotifyApi.getUserPlaylists(userData.body.id, { limit: 50 });
 
+        uploadToDatabase = true;
+        
         socket.emit('action', {
           type: 'LOGIN_SUCCESS',
           userSpotifyApi,
           userData: userData.body,
           userPlaylists: userPlaylists.body,
         });
-
-        // then add to database, separate function.
       } catch (err) {
         socket.emit('action', { type: 'LOGIN_FAILURE' });
+      }
+      
+      if (uploadToDatabase) {
+        try {
+          const values = [
+            userData.body.id,
+            userData.body.total,
+            userData.body.product,
+            userPlaylists.body.items.total,
+          ]
+  
+          await pool.query(SQL`
+            INSERT
+            INTO    users
+                    (id, followers, product, playlist)
+            VALUES  (${values[0]}, ${values[1]}, ${values[2]}, ${values[3]})
+            ON CONFLICT (id)
+            DO UPDATE SET id=${values[0]}, followers=${values[1]}, product=${values[2]}, playlist=${values[3]};
+          `);
+        } catch (err) {
+          log.warn(err);
+        }
       }
     }
     if (action.type === 'SERVER/GETPLAYLIST') {
@@ -103,22 +129,6 @@ function onConnect(socket) {
           VALUES  (${values[0]}, ${values[1]}, ${values[2]}, ${values[3]}, ${values[4]}, ${values[5]}, ${values[6]}, ${values[7]}, ${values[8]}, ${values[9]})
           ON CONFLICT (id, owner)
           DO UPDATE SET name=${values[2]}, description=${values[3]}, followers=${values[4]}, public=${values[5]}, collaborative=${values[6]}, snapshot_id=${values[7]}, songstats=${values[8]}, audiofeatures=${values[9]};
-        `);
-      } catch (err) {
-        log.warn(err);
-      }
-    }
-    if (action.type === 'SERVER/getUserData') {
-      try {
-        const values = serverHelpers.parseUserUser(action);
-
-        await pool.query(SQL`
-          INSERT
-          INTO    users
-                  (id, followers, product, playlist)
-          VALUES  (${values[0]}, ${values[1]}, ${values[2]}, ${values[3]})
-          ON CONFLICT (id)
-          DO UPDATE SET id=${values[0]}, followers=${values[1]}, product=${values[2]}, playlist=${values[3]};
         `);
       } catch (err) {
         log.warn(err);

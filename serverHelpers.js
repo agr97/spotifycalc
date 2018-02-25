@@ -44,19 +44,6 @@ function parseUserPlaylist(playlistdata) {
   return values;
 }
 
-function parseUserUser(actionData) {
-  const { userData, userPlaylistsTotal } = actionData;
-
-  const values = [
-    userData.id,
-    userData.followers.total,
-    userData.product,
-    userPlaylistsTotal,
-  ];
-
-  return values;
-}
-
 function parseDatabaseStats(playlists, userData) {
   const initialTotalPlaylistStats = {
     totalNameLength: 0,
@@ -147,7 +134,6 @@ function parseDatabaseStats(playlists, userData) {
 
 
 module.exports.parseUserPlaylist = parseUserPlaylist;
-module.exports.parseUserUser = parseUserUser;
 module.exports.parseDatabaseStats = parseDatabaseStats;
 module.exports.poolData = poolData;
 module.exports.spotifyCredentials = spotifyCredentials;

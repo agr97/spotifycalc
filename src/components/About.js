@@ -98,8 +98,7 @@ class About extends Component {
               <p><strong>Online Privacy Policy Only</strong></p>
               <p>This privacy policy applies only to our online activities and is valid for visitors to our website with regards to the information that they shared and/or collect in playlistcalcify.tk. This policy is not applicable to any information collected offline or via channels other than this website.</p>
               <p><strong>Consent</strong></p>
-              <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p>
-              <p>This privacy policy was created at <a href="https://privacypolicygenerator.info" target="_blank">privacypolicygenerator.info</a>.</p>
+              <p>By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.</p
             </div>
           </Dialog>
         </div>
