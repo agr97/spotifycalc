@@ -1,6 +1,6 @@
 # Playlist Calcify
 
-Located here at [www.playlistcalcify.tk](www.playlistcalcify.tk)
+Located here at [www.playlistcalcify.tk](https://www.playlistcalcify.tk)
 
 A website used for calculating statistics for Spotify Playlists. 
 
