@@ -1,12 +1,11 @@
 .about {
   width: 100%;
   height: auto;
-  margin-bottom: 20px;
-  margin: 5px;
+  margin: 5px 0px 20px;
 }
 
 .aboutLegal {
-	margin: 5px 0px 5px;
+	margin: 5px 5px 5px;
 }
 
 .aboutEULAButton {
@@ -14,5 +13,5 @@
 }
 
 .aboutDescribeFeatures div {
-	margin: 5px 0px 5px;
+	margin: 5px 5px 5px;
 }

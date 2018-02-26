@@ -37,7 +37,7 @@ class PlaylistClass extends Component {
 
   handleUrlChange(event) {
     this.setState({ playlistUrl: event.target.value });
-    const urlRegexp = /(\/user\/)+(\w+)+(\/playlist\/)+(\w+)/g;
+    const urlRegexp = /(\/user\/)+([A-Za-z0-9_.]+)+(\/playlist\/)+(\w+)/g;
 
     const parsedUrl = url.parse(event.target.value);
     const { pathname, hostname } = parsedUrl;

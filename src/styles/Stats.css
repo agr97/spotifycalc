@@ -5,10 +5,14 @@
   margin-bottom: 20px;
 }
   
-
 .statsLoading {
   text-align: center;
   margin: 5px;
+}
+
+.statsMainTop {
+  margin: 0px 5px 5px;
+  font-size: large;
 }
 
 .statsPlaylistType {

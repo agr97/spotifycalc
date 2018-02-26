@@ -95,23 +95,24 @@ function onConnect(socket) {
       } catch (err) {
         socket.emit('action', { type: 'LOGIN_FAILURE' });
       }
-      
+
+      // Upload to database
       if (uploadToDatabase) {
         try {
           const values = [
             userData.body.id,
-            userData.body.total,
+            userData.body.followers.total,
             userData.body.product,
-            userPlaylists.body.items.total,
-          ]
-  
+            userPlaylists.body.total,
+          ];
+
           await pool.query(SQL`
             INSERT
             INTO    users
-                    (id, followers, product, playlist)
+                    (id, followers, product, playlists)
             VALUES  (${values[0]}, ${values[1]}, ${values[2]}, ${values[3]})
             ON CONFLICT (id)
-            DO UPDATE SET id=${values[0]}, followers=${values[1]}, product=${values[2]}, playlist=${values[3]};
+            DO UPDATE SET id=${values[0]}, followers=${values[1]}, product=${values[2]}, playlists=${values[3]};
           `);
         } catch (err) {
           log.warn(err);
